@@ -57,7 +57,7 @@ jobs:
           # (default do checkout) não existe tag e o gate não teria o que comparar.
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           # tem de casar com o "packageManager" do web/package.json — versão diferente
           # resolve o lockfile de outro jeito e o CI deixa de testar o que roda aqui.
