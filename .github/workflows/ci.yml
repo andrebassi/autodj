@@ -16,7 +16,7 @@ jobs:
     env:
       GOWORK: "off"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-go@v5
         with:
@@ -51,7 +51,7 @@ jobs:
   web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # o rótulo de versão e o gate de changelog saem da git tag; num clone raso
           # (default do checkout) não existe tag e o gate não teria o que comparar.
@@ -89,7 +89,7 @@ jobs:
     name: Imagem — vulnerabilidades (Trivy)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Constrói a imagem real de deploy e a examina. Não publica nada.
       - name: build
