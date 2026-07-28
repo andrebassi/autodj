@@ -1,0 +1,58 @@
+[aist#0:0/pcm_s16le @ 0x94b444300] Guessed Channel Layout: stereo
+Input #0, wav, from 'sample.wav':
+  Metadata:
+    encoder         : Lavf62.3.100
+  Duration: 00:00:12.00, bitrate: 1411 kb/s
+  Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, stereo, s16, 1411 kb/s
+Stream mapping:
+  Stream #0:0 (pcm_s16le) -> asplit:default
+  silencedetect:default -> Stream #0:0 (pcm_s16le)
+  ebur128:out0 -> Stream #1:0 (pcm_s16le)
+  ametadata:default -> Stream #2:0 (pcm_s16le)
+Press [q] to stop, [?] for help
+[Parsed_amerge_8 @ 0x94b459680] No channel layout for input 1
+[Parsed_amerge_8 @ 0x94b459680] Input channel layouts overlap: output layout will be determined by the number of distinct input channels
+Output #0, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf62.3.100
+  Stream #0:0: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc62.11.100 pcm_s16le
+Output #1, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf62.3.100
+  Stream #1:0: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc62.11.100 pcm_s16le
+Output #2, null, to 'pipe:':
+  Metadata:
+    encoder         : Lavf62.3.100
+  Stream #2:0: Audio: pcm_s16le, 44100 Hz, stereo, s16, 1411 kb/s
+    Metadata:
+      encoder         : Lavc62.11.100 pcm_s16le
+[silencedetect @ 0x94a814420] silence_start: 0
+[silencedetect @ 0x94a814420] silence_end: 2.000068 | silence_duration: 2.000068
+[silencedetect @ 0x94a814420] silence_start: 10
+[Parsed_astats_10 @ 0x94b459800] Channel: 1
+[Parsed_astats_10 @ 0x94b459800] RMS level dB: -inf
+[Parsed_astats_10 @ 0x94b459800] Channel: 2
+[Parsed_astats_10 @ 0x94b459800] RMS level dB: -inf
+[Parsed_ebur128_2 @ 0x94b459200] Summary:
+
+  Integrated loudness:
+    I:         -24.3 LUFS
+    Threshold: -34.4 LUFS
+
+  Loudness range:
+    LRA:         7.3 LU
+    Threshold: -44.9 LUFS
+    LRA low:   -30.1 LUFS
+    LRA high:  -22.9 LUFS
+
+  True peak:
+    Peak:      -18.4 dBFS
+[silencedetect @ 0x94a814420] silence_end: 12 | silence_duration: 2
+[out#0/null @ 0x94b458240] video:0KiB audio:2067KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+[out#1/null @ 0x94b458540] video:0KiB audio:2067KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+[out#2/null @ 0x94b458840] video:0KiB audio:2067KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+size=N/A time=00:00:12.00 bitrate=N/A speed= 147x elapsed=0:00:00.08    

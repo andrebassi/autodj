@@ -1,0 +1,60 @@
+app = "autodj"
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Separação por IA desligada em prod desde a 0.2.36 (ver o Dockerfile). Se um dia
+  # voltar, este teto é obrigatório: 5,87 GB de pico com 2 threads contra 6,98 GB
+  # com 4 — numa VM de 8 GB o segundo número não deixa folga para sistema, servidor
+  # e SQLite, e um OOM ali derruba a máquina, não só o recurso.
+  # AUTODJ_DEMUCS_THREADS = "2"
+  PORT = "8095"
+  WEB_DIR = "/app/web/out"
+
+# Web/API + WebSocket (playout roda no browser; sem stream server-side)
+[http_service]
+  internal_port = 8095
+  force_https = true
+  auto_stop_machines = "off"   # 24/7 — nunca idle-stop (min 1 máquina)
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "20s"
+    method = "GET"
+    path = "/api/v1/health"
+
+# SQLite persistente (library.db + sessions/<fp>.db + media/) sobrevive deploy/restart.
+# Tudo mora em ~/.autodj (os.UserHomeDir), então o volume monta no HOME direto.
+#
+# ⚠️ O DESTINO CONTINUA `/root/.autodj` MESMO SEM ROOT — e isso é deliberado.
+# A v0.2.42 tentou movê-lo para /home/app/.autodj junto com a troca de usuário, e
+# QUEBROU o áudio em produção: `Track.Path` é gravado ABSOLUTO no banco, então cada
+# faixa já existente aponta para /root/.autodj/media/... Com o volume noutro lugar,
+# `http.ServeFile` recebia permissão negada ao atravessar /root (modo 700) e
+# devolvia 403 — a biblioteca listava, mas nenhuma música tocava.
+#
+# Mover o ponto de montagem exigiria reescrever o caminho em TODOS os bancos de
+# TODAS as estações. O usuário sem privilégio — que é o ganho de segurança real —
+# não depende disso: basta o processo poder atravessar /root e ser dono dos dados,
+# o que o entrypoint resolve. Layout menos bonito, zero migração de dado.
+[mounts]
+  source = "autodj_data"
+  destination = "/root/.autodj"
+
+[[vm]]
+  # Broadcast saiu; o server só orquestra fila/now-playing (SQLite leve), então
+  # compartilhada com 1 GB basta — e é o que mantém a conta em ~US$ 7/mês.
+  #
+  # ⚠️ NÃO SUBIR ISTO PARA HABILITAR SEPARAÇÃO POR IA sem refazer a conta. Foi
+  # tentado na v0.2.35 e revertido na 0.2.36: o demucs.cpp exige `performance-4x`
+  # (8 GB — medido, 5,9 GB de pico), o que leva a fatura de **US$ 7 para ~US$ 125
+  # por mês**, ~17×, para rodar MAIS DEVAGAR (8–15 min por faixa) do que na máquina
+  # do operador (~6 min). O recurso continua existindo onde faz sentido: local.
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "1gb"

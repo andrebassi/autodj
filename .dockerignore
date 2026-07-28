@@ -1,0 +1,39 @@
+# O que NÃO vai para o contexto de build.
+#
+# ⚠️ Não é só velocidade. Sem este arquivo o contexto inteiro é enviado ao builder
+# — inclusive `scripts/spotify-client-id.txt` (que é gitignorado, mas existe no
+# disco de quem desenvolve) e o `.git` completo. O estágio de build faz `COPY . .`,
+# então tudo isso entra numa camada intermediária da imagem. A camada final não a
+# carrega, mas o cache do builder remoto sim — e segredo em cache é segredo fora do
+# seu controle.
+
+# credenciais e ambiente
+.env
+.env.*
+scripts/spotify-client-id.txt
+*.pem
+*.key
+
+# histórico e metadados do repositório
+.git
+.github
+.gitignore
+
+# dependências e artefatos que o build refaz sozinho
+web/node_modules
+web/.next
+web/out
+node_modules
+server
+autodj
+migrate
+
+# saída de desenvolvimento e coisas que não pertencem à imagem
+*.log
+.DS_Store
+docs/diagramas/*.png
+plan
+testdata
+build/bin
+.claude
+.wrangler

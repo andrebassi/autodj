@@ -1,0 +1,39 @@
+# Atualização automática de dependências.
+#
+# Semanal, não diária: um projeto mantido nas horas livres não absorve um PR por
+# dia, e PR ignorado é pior que PR inexistente — ensina a ignorar os próximos.
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: npm
+    directory: "/web"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      # React/Next andam juntos; separá-los gera PR que não compila sozinho.
+      react:
+        patterns: ["react", "react-dom", "@types/react", "next"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "chore(ci)"
+
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "chore(docker)"

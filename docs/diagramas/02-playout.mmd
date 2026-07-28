@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  participant OP as Operador
+  participant UI as Navegador (React)
+  participant MOT as Motor de audio<br/>(1 dos 3)
+  participant API as Servidor Go
+  participant DB as SQLite da estacao
+
+  OP->>UI: PLAY
+  UI->>API: GET /playback (fila + no ar)
+  API->>DB: le a agenda
+  DB-->>API: faixa atual + proximas
+  API-->>UI: snapshot (WebSocket)
+
+  Note over UI,MOT: o servidor NAO toca nada.<br/>ele so mantem a agenda.
+
+  UI->>MOT: carrega a faixa do ar
+  UI->>MOT: PRE-CARREGA a proxima no deck ocioso
+  MOT-->>UI: posicao correndo (tick)
+
+  Note over MOT: faltando ~7s para o fim
+  UI->>MOT: startMix(proxima) — as duas soam juntas
+  MOT-->>UI: crossfade real (so entre faixas locais)
+
+  MOT-->>UI: faixa terminou
+  UI->>API: POST /playback/next
+  API->>DB: avanca a agenda
+  API-->>UI: novo snapshot
+  Note over UI: o deck ocioso vira o do ar<br/>(sem baixar nada de novo)

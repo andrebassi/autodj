@@ -1,0 +1,111 @@
+name: ci
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+# PR que recebe vários pushes seguidos não precisa terminar as execuções antigas.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    env:
+      GOWORK: "off"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.0"
+          cache-dependency-path: go.sum
+
+      # ffmpeg/ffprobe: metadados e a passada de análise (trim, loudness, vocal).
+      # aubio-tools: BPM. Sem ele os testes de BPM se AUTO-PULAM (t.Skip) e o CI fica
+      # verde sem ter exercitado nada — que é pior que ficar vermelho. É o mesmo
+      # pacote que a imagem de deploy instala.
+      - name: ferramentas de áudio (ffprobe, aubio)
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg aubio-tools
+
+      - name: vet
+        run: go vet ./...
+
+      - name: test
+        run: go test ./... -cover -count=1
+
+      - name: coverage gate (domain 100%, adapters >=90%)
+        run: ./scripts/coverage-gate.sh
+
+      # ⚠️ ISTO JÁ PEGOU COISA DE VERDADE: a primeira execução encontrou 14
+      # vulnerabilidades ALCANÇÁVEIS por este código — 13 da biblioteca padrão
+      # (crypto/tls, crypto/x509, net/http…) e uma no golang.org/x/text. Sem um
+      # portão, isso reaparece silenciosamente a cada mês que a toolchain
+      # envelhece. O govulncheck só reprova o que o código realmente ALCANÇA,
+      # então não vira ruído.
+      - name: vulnerabilidades (govulncheck)
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # o rótulo de versão e o gate de changelog saem da git tag; num clone raso
+          # (default do checkout) não existe tag e o gate não teria o que comparar.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          # tem de casar com o "packageManager" do web/package.json — versão diferente
+          # resolve o lockfile de outro jeito e o CI deixa de testar o que roda aqui.
+          version: 10.13.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      # --frozen-lockfile é o ponto de existir lockfile: PR que mexe em dependência
+      # sem atualizar o lock falha aqui, em vez de instalar outra árvore em silêncio.
+      - run: pnpm install --frozen-lockfile
+        working-directory: web
+
+      # o web/ não tem test runner (decisão do projeto), então typecheck + build SÃO
+      # o teste dele.
+      - run: npx tsc --noEmit
+        working-directory: web
+
+      # NÃO é `pnpm build`: o build cru pula o gate de changelog e a injeção da versão.
+      # web-build.sh é o único ponto de build da UI — é ele que reprova a versão nova
+      # sem entrada no changelog.ts e que carimba NEXT_PUBLIC_APP_VERSION.
+      - name: bundle (inclui gate de changelog + versão)
+        run: ./scripts/web-build.sh
+
+  imagem:
+    name: Imagem — vulnerabilidades (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Constrói a imagem real de deploy e a examina. Não publica nada.
+      - name: build
+        run: docker build -t autodj:ci --build-arg APP_VERSION=ci .
+
+      # ⚠️ `--ignore-unfixed` NÃO É AFROUXAMENTO, é o que torna o portão útil.
+      # Medido na imagem de produção: 12 CRITICAL e 98 HIGH, das quais apenas 2
+      # tinham correção disponível. As outras 108 são `affected`/`fix_deferred`/
+      # `will_not_fix` do Debian — ficam ali por meses, e um portão que reprova
+      # nelas seria desligado na primeira semana. Reprovar no que dá para
+      # corrigir é o que muda comportamento.
+      - name: trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: autodj:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          scanners: vuln

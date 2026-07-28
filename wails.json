@@ -1,0 +1,15 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "autodj",
+  "outputfilename": "autodj-desktop",
+  "frontend:install": "pnpm install",
+  "frontend:build": "pnpm build",
+  "frontend:dir": "web",
+  "author": {
+    "name": "AutoDJ"
+  },
+  "info": {
+    "productName": "AutoDJ",
+    "comments": "AutoDJ — suas músicas tocando sozinhas, com mixagem de DJ (Wails)"
+  }
+}

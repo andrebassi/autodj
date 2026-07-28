@@ -1,0 +1,12 @@
+-- 018_loudness: integrated loudness (EBU R128) medido do PCM, por faixa.
+--
+-- É o que permite tocar uma faixa masterizada alta e uma antiga no mesmo volume
+-- percebido: o playout deriva o ganho da distância entre este valor e o alvo
+-- escolhido pelo operador (mixing.Settings.TargetLUFS).
+--
+-- 0 = "não medido" em toda a cadeia — nunca "silêncio absoluto". O playout trata
+-- 0 como "sem correção de ganho", e o backfill de boot re-enfileira quem está
+-- em 0 para a análise preencher.
+--
+-- Idempotente (IF NOT EXISTS): o SQLite tem o equivalente em `ensureLoudnessColumn`.
+ALTER TABLE tracks ADD COLUMN IF NOT EXISTS loudness_lufs DOUBLE PRECISION NOT NULL DEFAULT 0;

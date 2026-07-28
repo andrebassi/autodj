@@ -1,0 +1,26 @@
+flowchart TB
+  BR["🌐 <b>NAVEGADOR</b> — é aqui que o áudio toca<br/>&lt;audio&gt; local (PCM) · Spotify Web Playback SDK · YouTube IFrame"]
+
+  DRIVING["<b>adapters/driving</b><br/>httpapi · ws"]
+  APP["<b>app/</b> — serviços<br/>orquestram casos de uso"]
+  PORTS["<b>ports/</b> — inbound · outbound<br/><i>interfaces: a costura do projeto</i>"]
+  DOMAIN["<b>domain/</b><br/>ZERO dependências externas<br/>é aqui que moram os invariantes<br/><i>spotify | youtube ⇒ não mixável</i>"]
+
+  D1["<b>sqlite</b> · postgres<br/><i>persistência</i>"]
+  D2["<b>ffprobe</b> · audioanalyze<br/><i>metadados, BPM, loudness</i>"]
+  D3["<b>spotify</b> · youtube<br/><i>catálogo externo</i>"]
+  D4["<b>stemsep</b> local + nuvem<br/><i>dois adapters, uma porta</i>"]
+
+  BR -->|"HTTP + WebSocket"| DRIVING
+  BR -.->|"fim da faixa:<br/>POST /playback/next"| DRIVING
+  DRIVING --> APP --> PORTS --> DOMAIN
+  D1 & D2 & D3 & D4 -->|"implementam"| PORTS
+
+  classDef dom fill:#1b5e20,stroke:#0b3d10,color:#fff
+  classDef mid fill:#e8f0fe,stroke:#3c78d8,color:#12325e
+  classDef adap fill:#fff4e5,stroke:#e08b00,color:#5a3600
+  classDef eng fill:#f3e8fd,stroke:#8e63ce,color:#3d1f6b
+  class DOMAIN dom
+  class PORTS,APP,DRIVING mid
+  class D1,D2,D3,D4 adap
+  class BR eng
