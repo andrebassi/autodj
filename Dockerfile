@@ -3,7 +3,7 @@
 # broadcast por servidor (Liquidsoap/Icecast) foi descontinuado.
 
 # ── web (static export) ──────────────────────────────────────────────
-FROM node:22-bookworm-slim AS web
+FROM node:26-bookworm-slim AS web
 WORKDIR /web
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable
