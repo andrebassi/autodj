@@ -1,0 +1,21 @@
+flowchart TB
+  UP["você sobe<br/>um MP3"] --> ST["filestore<br/>media/&lt;estação&gt;/"]
+  ST --> PROBE["<b>ffprobe</b><br/>duração · canais · tags"]
+  PROBE --> FILA["fila de análise<br/><i>segundo plano</i>"]
+
+  FILA --> P["<b>UMA passada de ffmpeg</b><br/>3 min de áudio em ~1,3 s"]
+  P --> S1["silencedetect<br/><i>corta o vazio</i>"]
+  P --> S2["ebur128<br/><i>volume → ganho</i>"]
+  P --> S3["mid/side<br/><i>onde a voz entra</i>"]
+  FILA --> BPM["aubio<br/><i>BPM</i>"]
+
+  S1 & S2 & S3 & BPM --> DB[("SQLite<br/>da estação")]
+  PROBE --> DB
+  DB --> UIX["o deck já sabe onde começar,<br/>onde terminar e quanto atenuar"]
+
+  classDef io fill:#e8f0fe,stroke:#3c78d8,color:#12325e
+  classDef proc fill:#fff4e5,stroke:#e08b00,color:#5a3600
+  classDef out fill:#e6f4ea,stroke:#1b7a3d,color:#0b3d10
+  class UP,ST,DB io
+  class PROBE,P,S1,S2,S3,BPM,FILA proc
+  class UIX out

@@ -1,0 +1,35 @@
+# Go
+/bin/
+*.out
+coverage.txt
+
+# local runtime data (Nix stack, liquidsoap scripts, sockets)
+/.data/
+/result
+/result-*
+
+# env
+.env
+.env.local
+
+# OS
+.DS_Store
+
+# frontend build (web/ has its own .gitignore too)
+web/node_modules/
+web/.next/
+web/out/
+
+# wails desktop build artifacts (macOS .app bundle, generated bindings, build cache)
+/build/bin/
+web/wailsjs/
+web/package.json.md5
+scripts/spotify-client-id.txt
+
+# binários compilados: saem do `go build`, não do repositório. O `server` chegou a
+# ficar rastreado (23 MB de Mach-O arm64, inútil pra quem não usa Mac ARM) — quem
+# clonar compila o seu.
+/server
+/autodj
+/migrate
+scripts/secrets.local.sh

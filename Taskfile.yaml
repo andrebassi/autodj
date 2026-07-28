@@ -1,0 +1,145 @@
+version: "3"
+
+# AutoDJ — Taskfile. LOCAL resources via Nix, NEVER Docker (global rule 23).
+# Docker only for remote deploy (Fly.io) — see task deploy.
+
+vars:
+  DATABASE_URL: '{{.DATABASE_URL | default "postgres://localhost:5432/autodj?sslmode=disable"}}'
+  PORT: '{{.PORT | default "8095"}}'
+
+env:
+  GOWORK: "off" # this module builds standalone; the workspace go.work is optional
+
+tasks:
+  default:
+    cmds:
+      - task -l
+    silent: true
+
+  # ── Local stack (Nix) ────────────────────────────────────────────────
+  up:
+    desc: Bring up local stack (Postgres) via Nix — no Docker
+    cmds:
+      - nix run .#services 2>&1 | tee /tmp/autodj-up.log
+
+  shell:
+    desc: Enter Nix dev shell (go, node, ffmpeg)
+    cmds:
+      - nix develop
+
+  # ── Go ───────────────────────────────────────────────────────────────
+  test:
+    desc: Run all Go tests with coverage
+    cmds:
+      - go test ./... -cover 2>&1 | tee /tmp/autodj-test.log
+
+  cover:
+    desc: Enforce coverage gate (domain 100%, adapters >=90%)
+    cmds:
+      - ./scripts/coverage-gate.sh 2>&1 | tee /tmp/autodj-cover.log
+
+  smoke:media:
+    desc: Smoke do isolamento de midia por estacao (media/<tenant>/)
+    cmds:
+      - ./scripts/smoke-media-tenant.sh 2>&1 | tee /tmp/autodj-smoke-media.log
+
+  build:
+    desc: Build server + migrate binaries
+    cmds:
+      - mkdir -p bin
+      - go build -o bin/server ./cmd/server
+      - go build -o bin/migrate ./cmd/migrate
+
+  desktop:dev:
+    desc: Wails desktop app in hot-reload mode (needs the wails CLI + webkit toolchain)
+    cmds:
+      - wails dev -tags desktop 2>&1 | tee /tmp/autodj-desktop-dev.log
+
+  desktop:build:
+    desc: Build the native desktop app bundle (web/out + wails build -> build/bin/autodj.app)
+    cmds:
+      # wails build compiles the module-root main.go (behind -tags desktop) and
+      # packages a real macOS .app. A raw `go build` binary does not open a window.
+      - ./scripts/web-build.sh 2>&1 | tee /tmp/autodj-web-build.log
+      - wails build -tags desktop -s -skipbindings 2>&1 | tee /tmp/autodj-desktop-build.log
+
+  desktop:run:
+    desc: Build then launch the native desktop app
+    deps: [desktop:build]
+    cmds:
+      - open build/bin/autodj.app
+
+  desktop:browser:
+    desc: Build then run headless (no window) + open the UI in the default browser
+    deps: [desktop:build]
+    cmds:
+      # Run the inner binary directly (not via `open`) so it stays in the
+      # foreground/background of this shell and Ctrl-C stops it.
+      - build/bin/autodj.app/Contents/MacOS/autodj-desktop --browser 2>&1 | tee /tmp/autodj-headless.log
+
+  migrate:
+    desc: Apply SQL migrations to DATABASE_URL
+    cmds:
+      - DATABASE_URL="{{.DATABASE_URL}}" go run ./cmd/migrate
+
+  dev:
+    desc: Run the API server (SQLite ~/.autodj/library.db by default; AUTODJ_DB_PATH=memory for ephemeral, DATABASE_URL for Postgres; playout roda no browser)
+    cmds:
+      - PORT="{{.PORT}}" go run ./cmd/server 2>&1 | tee /tmp/autodj-dev.log
+
+  serve:
+    desc: "Serve web/out + API with Spotify Client ID baked in (scripts/spotify-client-id.txt) — survives restart. PORT=8099 default; SQLite por fingerprint (persistente) desde a v0.2.18 — AUTODJ_DB_PATH=memory volta ao efêmero"
+    cmds:
+      - ./scripts/serve-local.sh 2>&1 | tee /tmp/autodj-serve.log
+
+  serve:youtube:
+    desc: "Smoke test local do YouTube: web/out + API com Spotify + YouTube habilitados (creds do pass), redirect loopback :8095. PORT=8095, AUTODJ_DB_PATH=memory default"
+    cmds:
+      - ./scripts/serve-youtube-local.sh 2>&1 | tee /tmp/autodj-local.log
+
+  lib:scan:
+    desc: Scan a folder into the library (FOLDER=/path required)
+    requires:
+      vars: [FOLDER]
+    cmds:
+      - |
+        curl -sS -X POST "http://localhost:{{.PORT}}/api/library/scan" \
+          -H 'content-type: application/json' \
+          -d '{"root":"{{.FOLDER}}"}' | tee /tmp/autodj-scan.log
+
+  playback:load:
+    desc: Load local tracks into the queue (playout roda no browser)
+    cmds:
+      - curl -sS -X POST "http://localhost:{{.PORT}}/api/playback/load" | tee /tmp/autodj-load.log
+
+  # ── Frontend ─────────────────────────────────────────────────────────
+  web:dev:
+    desc: Next.js dev server (Player UI)
+    dir: web
+    cmds:
+      - pnpm install
+      - pnpm dev
+
+  web:build:
+    desc: Static export of the web UI into web/out (version from git tag + changelog gate)
+    cmds:
+      # scripts/web-build.sh: valida changelog vs git tag e injeta
+      # NEXT_PUBLIC_APP_VERSION antes do pnpm build (inlinado no bundle).
+      - ./scripts/web-build.sh 2>&1 | tee /tmp/autodj-web-build.log
+
+  # ── Remote deploy (Docker allowed here only) ─────────────────────────
+  deploy:
+    desc: Deploy to Fly.io (Docker image build is remote-only, per rule 23). Gate de changelog + versão da git tag via --build-arg.
+    cmds:
+      # valida changelog vs git tag e injeta a versão no build da imagem (Dockerfile
+      # ARG APP_VERSION → NEXT_PUBLIC_APP_VERSION). Aborta se o changelog estiver atrás.
+      # Deploy fora da tag (ou com árvore suja) sobe rotulado "-dev.<sha>" — assim o
+      # titlebar de prod nunca mente dizendo ser um release que não é.
+      - |
+        VER="$(./scripts/app-version.sh)"
+        fly deploy --build-arg APP_VERSION="$VER" 2>&1 | tee /tmp/autodj-deploy.log
+
+  stems:cloud:
+    desc: "Prepara SEM-VOZ de TODO o acervo numa GPU alugada (RunPod). Exige AUTODJ_RUNPOD_API_KEY; ~US$ 0,10 pelo acervo, medido"
+    cmds:
+      - ./scripts/stems-cloud.sh 2>&1 | tee /tmp/autodj-stems-cloud.log

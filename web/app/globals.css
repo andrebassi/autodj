@@ -1,0 +1,7706 @@
+/* ===== AutoDJ — operator UI ===== */
+
+:root {
+  --cream: #e7ecf2;
+  --cream-2: #d8e0ea;
+  --line: #b3c1d4;
+  --green: #3d6fa5;
+  --green-d: #274c78;
+  --green-row: #6f9cc8;
+  --green-row-2: #7fa8d0;
+  --green-played: #b9cce0;
+  --orange: #eaa159;
+  --orange-d: #d8863a;
+  --purple: #b6c2da;
+  --purple-2: #cdd6ea;
+  --ink: #26313f;
+  --seg: #223247;
+
+  /* ===== Ant Design token layer (redesign) ===== */
+  --ant-primary: #1677ff;
+  --ant-primary-hover: #4096ff;
+  --ant-primary-active: #0958d9;
+  --ant-primary-bg: #e6f0ff;
+  --ant-success: #52c41a;
+  --ant-warning: #faad14;
+  --ant-danger: #ff4d4f;
+  --ant-danger-hover: #ff7875;
+  --ant-text: #1f2733;
+  --ant-text-2: #4a5464;
+  --ant-text-3: #7b8595;
+  --ant-border: #d9dee6;
+  --ant-border-2: #eceef2;
+  --ant-fill: #f5f6f8;
+  --ant-radius: 8px;
+  --ant-radius-sm: 6px;
+  --ant-mask: rgba(0, 0, 0, 0.45);
+  --ant-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --ant-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --ant-focus: 0 0 0 3px rgba(22, 119, 255, 0.14);
+  --ant-ease: cubic-bezier(0.08, 0.82, 0.17, 1);
+
+  /* ===== Semantic theme tokens (light values pinned to the literals they
+     replace — light theme stays pixel-identical; only dark blocks remap). ===== */
+  --surface: #fff;      /* base white surfaces */
+  --surface-2: #fafafa; /* raised neutral near-whites */
+  --surface-3: #dde5ef; /* sunken fills / inputs / tracks / headers */
+  --txt: #1f2733;       /* primary text */
+  --txt-2: #6a7288;     /* secondary text */
+  --txt-3: #777;        /* tertiary / muted text */
+  --bd: #dde5ef;        /* neutral borders */
+  --bd-2: #eceef2;      /* lighter hairline borders */
+  --ac-green-bg: #e6f7ec;   --ac-green-tx: #1f6b2f;
+  --ac-warn-bg: #fff4e0;    --ac-warn-tx: #7a4a00;
+  --ac-danger-bg: #fdecec;  --ac-danger-tx: #c0392b;
+  --ac-purple-bg: #ece6f6;  --ac-purple-tx: #4a2f7a;
+  --ac-blue-bg: #eef2f8;    --ac-blue-tx: #2f6fd0;
+}
+
+/* Ant-style modal motion: mask fades, card zooms up from 0.92. */
+@keyframes ant-mask-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ant-zoom-in {
+  0% { opacity: 0; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+body {
+  font-family: "Segoe UI", Tahoma, system-ui, sans-serif;
+  background: #1c1c1c;
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.9fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ============ LEFT operator ============ */
+.op {
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-right: 3px solid #a3b1c4;
+}
+
+.op-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 34px;
+  padding: 0 10px;
+  background: linear-gradient(#4d7fb5, #2f5d8f);
+  color: #eef4fb;
+  font-size: 13px;
+}
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+.brand-mark {
+  color: #a8d4ff;
+  font-size: 1.7em;
+  line-height: 1;
+  transform: translateY(1px);
+  text-shadow: 0 0 10px rgba(168, 212, 255, 0.6);
+}
+.brand-name {
+  font-size: 1.4em;
+}
+/* versão em selo pequeno estiloso, puxada da git tag */
+.brand-ver {
+  align-self: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: #dcecff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  text-transform: lowercase;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+.brand-ver:hover {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.42);
+  transform: translateY(-0.5px);
+}
+.brand-ver:active {
+  transform: translateY(0);
+}
+.brand-sub {
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+/* Aviso de versão nova (UpdateBadge), vizinho do .brand-ver no titlebar.
+   Cores em rgba como o resto DESTA barra (gradiente escuro de marca, fora do sistema
+   de tokens semânticos, que é calibrado pras superfícies claras) — segue o idioma do
+   .brand-ver logo acima em vez de importar um token que destoaria aqui. */
+.upd {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fff4d6;
+  background: rgba(255, 190, 60, 0.22);
+  border: 1px solid rgba(255, 190, 60, 0.5);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.upd:hover {
+  background: rgba(255, 190, 60, 0.34);
+  border-color: rgba(255, 190, 60, 0.75);
+}
+.upd-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffbe3c;
+  animation: upd-pulse 2.4s ease-in-out infinite;
+}
+@keyframes upd-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+.upd-confirm {
+  cursor: default;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.upd-msg {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.upd-go,
+.upd-later {
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.upd-go {
+  color: #2b1c00;
+  background: #ffbe3c;
+}
+.upd-later {
+  color: #fff4d6;
+  background: transparent;
+  border-color: rgba(255, 244, 214, 0.4);
+}
+/* Estúdio com movimento reduzido: o ponto para de pulsar, o aviso continua legível. */
+@media (prefers-reduced-motion: reduce) {
+  .upd-dot {
+    animation: none;
+  }
+  .upd {
+    transition: none;
+  }
+}
+.op-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.op-menu {
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: #eef4fb;
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+.op-menu:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.op-menu.on {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* piloto automático toggle (Story 4.5) */
+.op-autopilot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.18);
+  color: #dbe7f3;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.op-autopilot:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+.op-autopilot:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.op-autopilot.on {
+  background: #1f7a3d;
+  border-color: #2fae57;
+  color: #eaffef;
+}
+.op-autopilot-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7a7a7a;
+}
+.op-autopilot.on .op-autopilot-dot {
+  background: #5cff8f;
+  box-shadow: 0 0 6px #5cff8f;
+}
+.op-autopilot-q {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  padding: 0 6px;
+  font-size: 10px;
+}
+
+/* now-playing header */
+.np {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px 6px;
+  background: linear-gradient(#eef2f8, #dde5ef);
+  border-bottom: 1px solid var(--line);
+}
+.np-left {
+  min-width: 0;
+}
+.np-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--green-d);
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.np-next {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+.np-next-tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: linear-gradient(#2f6df0, #1f57cc);
+  padding: 3px 9px;
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgba(31, 87, 204, 0.4);
+}
+.np-next-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--green-d);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.np-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.timers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 15px;
+}
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.timer.up {
+  color: var(--txt-2);
+}
+.timer.plus {
+  color: #2f7fb5;
+}
+.timer.minus {
+  color: var(--ac-danger-tx);
+}
+.t-ico {
+  font-size: 11px;
+}
+.rds {
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--txt-3);
+}
+
+.clock-block {
+  text-align: right;
+}
+.clock {
+  font-family: "DSEG7", "Courier New", monospace;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--seg);
+  line-height: 1;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 0 #fff;
+}
+.clock b {
+  color: #3d6fa5;
+  animation: blink 1s steps(1) infinite;
+}
+/* tocando algo → separadores fixos (para de piscar) */
+.clock.steady b {
+  animation: none;
+  opacity: 1;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+.date {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--txt-2);
+  line-height: 1.1;
+}
+.d-day {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-d);
+}
+.d-week {
+  font-weight: 600;
+}
+
+/* VU meter */
+.vu {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 46px;
+  padding: 4px 12px;
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--line);
+}
+.vu-bar {
+  flex: 1;
+  min-width: 2px;
+  background: linear-gradient(#2f5d8f, #7fa8d0);
+  border-radius: 1px 1px 0 0;
+  transition: height 0.09s linear;
+}
+
+/* visualização do cabeçalho (linha de progresso OU waveform) + toggle no canto */
+.nowviz {
+  position: relative;
+}
+.nowviz-toggle {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  z-index: 3;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #2f5d8f;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.nowviz-toggle:hover {
+  background: var(--surface);
+}
+
+/* linha de progresso real do no-ar (topo): já tocou | barra | falta */
+.npv {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 42px 0 12px; /* espaço à direita p/ não colidir com o toggle */
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--line);
+}
+.npv-t {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--txt-2);
+  min-width: 46px;
+}
+.npv-remain {
+  text-align: right;
+  color: var(--ac-danger-tx);
+}
+.npv-track {
+  position: relative;
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(47, 93, 143, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(47, 93, 143, 0.16);
+}
+.npv-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2f5d8f, #7fa8d0);
+  pointer-events: none;
+}
+.npv-head {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #1f3f5f;
+  box-shadow: 0 0 5px rgba(31, 63, 95, 0.6);
+  transform: translateX(-1px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* timeline */
+.timeline {
+  padding: 4px 12px 6px;
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--line);
+}
+.tl-track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 44px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #a3b1c4;
+}
+/* cada coluna = 1 hora (botão). Ocupa altura via --h (12%..100%) */
+.tl-col {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+.tl-bar {
+  flex: none; /* não encolher: mantém a altura var(--h) no flex-column */
+  height: var(--h, 12%);
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(#7fa8d0, #4d7bb0);
+  transition: height 0.2s ease, background 0.12s ease, filter 0.12s ease;
+}
+.tl-col:hover .tl-bar {
+  filter: brightness(1.12);
+}
+.tl-col.cur .tl-bar {
+  background: linear-gradient(#7fc0a0, #2f9e6f); /* hora atual = verde */
+}
+.tl-col.sel .tl-bar {
+  background: linear-gradient(#f4b45a, #e08c2a); /* hora selecionada = âmbar */
+  box-shadow: 0 0 0 1.5px #cf7a1e inset;
+}
+.tl-lbl {
+  position: absolute;
+  bottom: -12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 8px;
+  line-height: 12px;
+  color: var(--txt-3);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.tl-col.cur .tl-lbl,
+.tl-col.sel .tl-lbl {
+  font-weight: 700;
+  color: #33404f;
+}
+.tl-cursor {
+  position: absolute;
+  top: -2px;
+  bottom: 10px;
+  width: 2px;
+  background: #c0392b;
+  transform: translateX(-1px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* playlist grid */
+.grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--ac-blue-bg);
+  position: relative;
+}
+.grid.dropover {
+  outline: 3px dashed #2f6fd0;
+  outline-offset: -3px;
+  background: var(--ac-blue-bg);
+}
+.grid-drophint {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 8px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--ac-blue-tx);
+  background: rgba(227, 237, 251, 0.95);
+  border-bottom: 2px dashed #2f6fd0;
+  pointer-events: none;
+}
+.grid-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--txt-3);
+  font-size: 14px;
+}
+
+/* ---- Playout: decks fixos no topo + abas Tocadas|Fila roláveis embaixo ---- */
+.playout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.deck-fixed {
+  flex: none; /* os dois decks A/B ficam parados — nunca rolam com as listas */
+}
+.ptabs {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ptabs-nav {
+  flex: none;
+  margin: 8px 10px 6px;
+}
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.row {
+  display: grid;
+  grid-template-columns: 26px 22px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 12px 0 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  color: var(--txt);
+}
+.r-ico {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.85;
+}
+.r-check {
+  text-align: center;
+  color: #274c78;
+  font-weight: 700;
+}
+.r-title {
+  font-weight: 600;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.15;
+}
+.r-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* ⚠️ A ALTURA DA LINHA PRECISA CABER O SELO. O `overflow: hidden` acima é
+     obrigatório (é ele que faz o "…" nos títulos longos), então tudo que passar
+     da caixa é RECORTADO — e o que passava era o ícone do selo SEM-VOZ, o
+     elemento mais alto da linha. Medido: selo com 17px dentro de uma caixa de
+     15,2px. Não é margem de conforto, é o que impede o corte. */
+  line-height: 18px;
+}
+/* intérprete/cantor abaixo do título, menor e cinza (mesma leitura da fila e do
+   histórico). Provider-agnóstico: vem do campo `artist` do Playable. */
+.r-artist {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--txt-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* badge "repetida" na aba Tocadas: 🔁 N× = a faixa tocou N vezes na sessão
+   (aparece após RETROCEDER religar a mesma música). Pílula discreta laranja,
+   self-start p/ não esticar no flex-column do .r-title. */
+.r-repeat {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 0 6px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--ac-warn-tx);
+  background: var(--ac-warn-bg);
+  box-shadow: inset 0 0 0 1px rgba(208, 135, 47, 0.22);
+}
+/* capa uniforme (TrackCover). "row" = miniatura da fila/histórico (bem menor,
+   pedido do usuário); "deck" = grande, no player estilo Spotify. Placeholder =
+   ladrilho com nota musical quando não há arte (404 / sem id). */
+.track-cover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--surface-3);
+  flex: none;
+  overflow: hidden;
+}
+.cover-row {
+  width: 26px;
+  height: 26px;
+}
+/* ghost de drag: só a capa flutua (setDragImage). Efeito = ampliada, cantos
+   arredondados, sombra forte e leve rotação — fica offscreen, o browser só usa
+   o snapshot. pointer-events none p/ não capturar hover. */
+.cover-drag-ghost {
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
+  pointer-events: none;
+  transform: rotate(-5deg);
+  border-radius: 8px;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 2px rgba(88, 180, 224, 0.9);
+  opacity: 0.95;
+}
+.cover-deck {
+  width: 60px;
+  height: 60px;
+  border-radius: 7px;
+}
+/* slot do YouTube: âncora 60×60 que o iframe sobrepõe (position:fixed). A capa
+   fallback fica ABSOLUTA preenchendo o slot, SOB o iframe — some atrás do vídeo
+   quando o embed toca, aparece quando o overlay se esconde (erro de embed). */
+.yt-slot {
+  position: relative;
+}
+.yt-slot > .track-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* "spot" = capa média da lista de resultados Spotify (miniatura do álbum). */
+.cover-spot {
+  width: 38px;
+  height: 38px;
+  border-radius: 5px;
+}
+.cover-ph {
+  color: var(--txt-3);
+  font-size: 13px;
+  box-shadow: inset 0 0 0 1px var(--bd);
+}
+.cover-deck.cover-ph {
+  font-size: 26px;
+}
+.cover-spot.cover-ph {
+  font-size: 17px;
+}
+/* placeholder do deck: superfície escura pra combinar com o gradiente do deck */
+.deck .cover-ph {
+  background: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.r-trans {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--txt-2);
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+.r-dur {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--txt-2);
+}
+.r-timers {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  font-weight: 700;
+}
+.rt.up {
+  color: #2f7fb5;
+}
+
+.row.k-music {
+  background: var(--green-row);
+}
+.row.k-music:nth-child(even) {
+  background: var(--green-row-2);
+}
+.row.k-vinheta {
+  background: var(--green-played);
+}
+.row.k-commercial {
+  background: var(--purple);
+}
+.row.k-hora {
+  background: var(--purple-2);
+}
+.row.k-programete {
+  background: var(--purple-2);
+}
+/* aba Tocadas = MESMO visual da Fila: HistoryRow renderiza com classe .row.q,
+   herdando grid e estilo da fila (pílula pos, fonte, origem, trans, dur). Não há
+   mais .row.played/.r-when — o carimbo de hora virou tooltip da linha. */
+/* fila real (e Tocadas): pos | grip | ico | check | capa | título | fonte | origem | BPM | trans | dur */
+.rows .row.q {
+  grid-template-columns: 28px 22px 26px 22px 26px 1fr auto 120px 42px auto auto;
+  height: auto;
+  min-height: 34px;
+}
+/* nº de posição ABSOLUTA na sequência (deck ao vivo, cauda da fila e aba Tocadas).
+   Pílula discreta na paleta azul do app (NÃO o vermelho/branco do RadioPro).
+   Re-renumera sozinho — o valor deriva de índice + posBase, não do item. */
+.r-pos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ac-blue-tx);
+  background: var(--ac-blue-bg);
+  box-shadow: inset 0 0 0 1px rgba(47, 111, 208, 0.22);
+}
+/* grip de arrastar (⠿): discreto, ganha cor no hover da linha. A linha inteira é
+   draggable; o grip é só a affordance visual de "pega aqui p/ reordenar". */
+.r-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--txt-3);
+  opacity: 0.35;
+  cursor: grab;
+  user-select: none;
+  transition: opacity 0.12s ease, color 0.12s ease;
+}
+.rows .row.q:hover .r-grip {
+  opacity: 0.9;
+  color: var(--txt-2);
+}
+.rows .row.q.q-dragging {
+  opacity: 0.45;
+}
+.rows .row.q.q-dragging .r-grip {
+  cursor: grabbing;
+}
+/* indicador de onde o item vai cair: barra verde acima (drop-up) ou abaixo
+   (drop-down) da linha alvo durante o arraste. */
+.rows .row.q.drop-up {
+  box-shadow: inset 0 2px 0 0 var(--ac-green-tx);
+}
+.rows .row.q.drop-down {
+  box-shadow: inset 0 -2px 0 0 var(--ac-green-tx);
+}
+/* cor uniforme da fila = mesma superfície das "mais tocadas" (played), NÃO a
+   listra colorida por k-* (venceria por ordem no arquivo). O 🟢/🎵 já marca a
+   fonte; a fila não precisa de cor gritante. Vale claro e escuro (token). */
+.rows .row.q,
+.rows .row.q:nth-child(even) {
+  background: var(--surface-2);
+  color: var(--txt-2);
+  /* relevo entre as linhas: brilho no topo + sombra na base = cada linha
+     parece levemente elevada (bevel). Vale claro e escuro (overlays neutros). */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+:root[data-theme="escuro"] .rows .row.q,
+:root[data-theme="escuro"] .rows .row.q:nth-child(even) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+.rows .row.q .r-title {
+  color: var(--txt-2);
+  font-weight: 600;
+}
+.rows .row.q .r-check {
+  color: var(--txt-3);
+}
+.rows .row.q .r-ico {
+  opacity: 0.6;
+}
+.rows .row.q .r-dur,
+.rows .row.q .r-trans {
+  color: var(--txt-3);
+}
+.r-src {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Selo de origem elegante: logo da marca + wordmark (SourceBadge). Usado no
+   deck, fila e Tocadas. Pílula discreta; a cor vem da marca (verde/vermelho),
+   o texto herda o cinza da UI. */
+.src-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 2px 7px 2px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--bd-2, #d7deea);
+  background: var(--surface-2, #f2f5fa);
+  color: var(--txt-2, #4a5568);
+}
+.src-badge svg {
+  display: block;
+  flex: none;
+}
+.src-badge-txt {
+  display: inline-block;
+}
+.src-badge.src-spotify {
+  border-color: color-mix(in srgb, #1ed760 45%, var(--bd-2, #d7deea));
+}
+.src-badge.src-youtube {
+  border-color: color-mix(in srgb, #ff0000 30%, var(--bd-2, #d7deea));
+}
+.src-badge.src-local {
+  color: var(--txt-3, #718096);
+  opacity: 0.9;
+}
+.src-badge.src-local svg {
+  opacity: 0.7;
+}
+
+/* Variante do DECK: fundo escuro → selo compacto e glassy, não a pílula clara.
+   Ancorado ABSOLUTO no canto inferior-esquerdo do deck (abaixo do badge A/B +
+   botão Play/Stop, dentro da coluna de controles ~90px, à esquerda da capa);
+   menor que a versão de lista, logo reduzido, cor da marca só no filete/glow.
+   Anima a entrada (fade + slide sutil). */
+.src-badge.src-badge-deck {
+  position: absolute;
+  left: 8px;
+  bottom: 5px;
+  z-index: 2;
+  gap: 3px;
+  font-size: 8px;
+  letter-spacing: 0.3px;
+  padding: 1px 5px 1px 3px;
+  color: rgba(242, 251, 246, 0.82);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  animation: src-badge-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.src-badge.src-badge-deck svg {
+  width: 10px;
+  height: 10px;
+}
+.src-badge.src-badge-deck.src-youtube svg {
+  width: 13px;
+  height: 9px;
+}
+.src-badge.src-badge-deck.src-spotify {
+  border-color: rgba(30, 215, 96, 0.5);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(30, 215, 96, 0.14) inset;
+}
+.src-badge.src-badge-deck.src-youtube {
+  border-color: rgba(255, 60, 60, 0.5);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 60, 60, 0.14) inset;
+}
+.src-badge.src-badge-deck:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+@keyframes src-badge-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .src-badge.src-badge-deck {
+    animation: none;
+  }
+}
+
+.r-origin {
+  font-size: 11px;
+  color: var(--txt-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+/* rabo invisível: espaço p/ rolar e ancorar os decks abaixo das 3 últimas tocadas */
+.grid-tail {
+  height: 55vh;
+  border: none;
+  background: none;
+  pointer-events: none;
+}
+.row.playing {
+  grid-template-columns: 26px 22px 1fr auto auto auto;
+  background: linear-gradient(#2f6b4a, #1f4d34);
+  color: #eaf6ee;
+  height: 48px;
+  font-size: 19px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.row.playing .r-title {
+  font-weight: 800;
+  font-size: 20px;
+}
+.row.playing .r-check {
+  color: #bfe6cf;
+}
+.row.playing .r-timers,
+.row.playing .rt.up {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 800;
+}
+.row.playing .r-trans {
+  color: #cfe9da;
+}
+.row.playing .r-dur {
+  color: #eaf6ee;
+  font-size: 15px;
+}
+.grid-hint {
+  padding: 14px 16px;
+  color: var(--txt-3);
+  font-size: 13px;
+}
+
+/* ---- rich RadioPro program rows ---- */
+.rr {
+  display: grid;
+  grid-template-columns: 34px 24px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 14px 0 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  color: var(--ac-purple-tx);
+}
+.rr-ico {
+  text-align: center;
+  font-size: 16px;
+}
+.rr-check {
+  text-align: center;
+  color: var(--ac-purple-tx);
+  font-weight: 700;
+}
+.rr-label {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rr-dur {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+/* NAVY family — música + vinheta/mídia programada (igual RadioPro original) */
+.rr-music {
+  background: linear-gradient(#4a5aa2, #3a4788);
+  color: #eef1fb;
+  border-bottom: 1px solid #2c3868;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.rr-music:nth-of-type(even) {
+  background: linear-gradient(#455496, #35437e);
+}
+.rr-vinhetaG {
+  background: linear-gradient(#4a5aa2, #3a4788);
+  color: #eef1fb;
+  border-bottom: 1px solid #2c3868;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.rr-music .rr-check,
+.rr-vinhetaG .rr-check {
+  color: #8fe36a;
+}
+.rr-music .rr-dur,
+.rr-vinhetaG .rr-dur {
+  color: #eef1fb;
+  opacity: 0.95;
+}
+.rr-music .rr-ico {
+  color: #f4c020;
+}
+.rr-vinhetaG .rr-ico,
+.rr-abert .rr-ico,
+.rr-vinhetaL .rr-ico {
+  color: #f4c020;
+}
+
+/* LILAC family — bloco comercial / hora certa / spots */
+.rr-bloco {
+  background: var(--ac-purple-bg);
+  color: var(--ac-purple-tx);
+}
+.rr-bloco .rr-label {
+  padding-left: 40px;
+}
+.rr-abert {
+  background: var(--ac-purple-bg);
+}
+.rr-comercial,
+.rr-horacerta,
+.rr-temperatura,
+.rr-vinhetaL {
+  background: var(--ac-purple-bg);
+}
+.rr-comercial .rr-label,
+.rr-horacerta .rr-label,
+.rr-temperatura .rr-label,
+.rr-vinhetaL .rr-label,
+.rr-abert .rr-label {
+  padding-left: 40px;
+  font-weight: 700;
+}
+.rr-temperatura .rr-ico {
+  color: var(--ac-danger-tx);
+}
+.rr-horacerta .rr-ico {
+  color: var(--ac-purple-tx);
+}
+
+/* live-read announce block */
+.rr-locucao {
+  grid-template-columns: 34px 24px 1fr;
+  align-items: start;
+  background: var(--ac-purple-bg);
+  padding: 8px 14px 10px 8px;
+}
+.rr-locucao .rr-ico {
+  padding-top: 4px;
+}
+.rr-locucao .rr-check {
+  padding-top: 4px;
+}
+.loc-box {
+  border: 1px solid #cdbce8;
+  border-radius: 4px;
+  background: var(--ac-purple-bg);
+  padding: 8px 12px;
+}
+.loc-head {
+  text-align: center;
+  font-weight: 800;
+  color: var(--ac-purple-tx);
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.loc-text {
+  text-align: center;
+  color: var(--ac-purple-tx);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* orange playing row — waveform + markers + dual timer */
+.pr {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 8px;
+  background: linear-gradient(#2f6b4a, #1f4d34);
+  border-top: 1px solid #1a4230;
+  border-bottom: 1px solid #1a4230;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+.pr-ico {
+  text-align: center;
+  font-size: 22px;
+  color: #cfe9da;
+}
+.pr-body {
+  min-width: 0;
+}
+.pr-artist {
+  font-weight: 800;
+  font-size: 16px;
+  color: #eaf6ee;
+  line-height: 1.2;
+}
+.pr-title {
+  font-weight: 800;
+  font-size: 16px;
+  color: #eaf6ee;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+.pr-timers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1.05;
+}
+.pr-up {
+  color: #b2f2bb;
+}
+.pr-down {
+  color: #ffc9c9;
+}
+
+/* dual deck (VirtualDJ style): Player A tocando + Player B engatilhada */
+.deckpair {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 5px;
+  position: relative;
+  /* não é mais preto chapado: slate diagonal com profundidade + glow ambiente
+     que ecoa os decks (verde no A em cima-esq, azul no B embaixo-dir) + brilho
+     superior. Fundo escuro premium, mesma família dos decks. */
+  background:
+    radial-gradient(130% 90% at 12% 0%, rgba(63, 174, 114, 0.14), transparent 58%),
+    radial-gradient(130% 90% at 88% 100%, rgba(63, 146, 201, 0.16), transparent 58%),
+    linear-gradient(158deg, #1c2836 0%, #101923 52%, #0a121b 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid #05090d;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -18px 30px rgba(0, 0, 0, 0.32);
+}
+/* arrastar por cima de UM deck → realce por-deck. Ao vivo = "tocar agora" (âmbar,
+   corta o que toca). Ocioso/nada tocando = "próxima" (verde, coloca e espera). */
+.deck.deck-hot-cut {
+  box-shadow:
+    inset 0 0 0 2px rgba(240, 176, 74, 0.95),
+    inset 0 0 26px rgba(240, 176, 74, 0.22);
+}
+.deck.deck-hot-cue {
+  box-shadow:
+    inset 0 0 0 2px rgba(63, 174, 114, 0.95),
+    inset 0 0 26px rgba(63, 174, 114, 0.2);
+}
+.deck {
+  position: relative; /* âncora da pílula de posição (.deck-pos) no canto externo */
+  display: grid;
+  grid-template-columns: 46px 38px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+/* botão Play/Stop do deck (antes do waveform) — estilo RadioPro transport */
+.deck-ctl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1;
+  color: #fff;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset, 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: filter 0.12s, background 0.12s;
+}
+.deck-ctl:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+.deck-ctl:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.deck-ctl:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.deck-ctl-play {
+  background: linear-gradient(#3fae72, #1f6b45);
+  box-shadow: 0 0 0 1px #58c98c inset, 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+.deck-ctl-stop {
+  background: linear-gradient(#d8564f, #9c322c);
+  box-shadow: 0 0 0 1px #e8756e inset, 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+/* ícones como formas CSS (glyphs unicode ficavam minúsculos e tortos). */
+.deck-ico-play {
+  width: 0;
+  height: 0;
+  margin-left: 3px; /* centra opticamente o triângulo */
+  border-left: 15px solid #fff;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+}
+.deck-ico-stop {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  background: var(--surface);
+}
+.deck-a {
+  background: linear-gradient(#2f6b4a, #163f2b);
+}
+.deck-b {
+  background: linear-gradient(#254e6c, #142f43);
+}
+.deck-badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+}
+/* nº de posição ABSOLUTA do deck (no ar=base+1, cued=base+2; base=nº de tocadas).
+   Pílula no canto superior-DIREITO, embutida (inset) p/ não ser cortada pela borda
+   esquerda do painel — círculo destacado (estilo RadioPro), na cor do deck (A verde
+   / B azul, override abaixo). Continua a contagem: fila da aba começa em base+3.
+   z-index sobe p/ ficar por cima da borda do deck vizinho. */
+.deck-pos {
+  position: absolute;
+  top: -11px;
+  right: 6px;
+  left: auto;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  background: #2f6fd0;
+  /* ring escuro fixo (o .deckpair é sempre slate, independe do tema) p/ a pílula
+     "recortar" da borda do deck; sombra dá o relevo do círculo transbordando. */
+  box-shadow: 0 0 0 2px rgba(8, 14, 20, 0.92), 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+.deck-a .deck-pos {
+  background: linear-gradient(#3fae72, #1f6b45);
+}
+.deck-b .deck-pos {
+  background: linear-gradient(#3f92c9, #1f5a86);
+}
+.deck-a .deck-badge {
+  background: linear-gradient(#3fae72, #1f6b45);
+  box-shadow: 0 0 0 1px #58c98c inset, 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.deck-b .deck-badge {
+  background: linear-gradient(#3f92c9, #1f5a86);
+  box-shadow: 0 0 0 1px #58b4e0 inset, 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.deck-body {
+  min-width: 0;
+}
+/* layout Spotify: capa à esquerda + coluna (título forte em cima, intérprete
+   cinza embaixo). Baseline vira center por causa da capa. */
+.deck-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.deck-meta-txt {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 1px;
+}
+.deck-title {
+  font-weight: 800;
+  font-size: 15px;
+  color: #f2fbf6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.deck-artist {
+  font-weight: 600;
+  font-size: 13px;
+  color: rgba(242, 251, 246, 0.62);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.deck-artist-idle {
+  font-weight: 700;
+  font-size: 15px;
+  color: rgba(242, 251, 246, 0.82);
+}
+.deck-cue {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #061019;
+  background: #7fd0ff;
+}
+/* MODO VOZ atuando NESTA faixa: o que está no ar é o instrumental. Mesma anatomia
+   do CUE (pílula à direita da linha de meta) porque é a mesma gramática de selo de
+   deck — muda só a cor, roxa, que não colide com o azul do CUE nem com o âmbar da
+   mixagem. Cor literal como os vizinhos: o `.deckpair` é uma superfície slate fixa,
+   igual nos dois temas, então token semântico aqui inverteria com o tema e brigaria
+   com um fundo que não inverte. */
+.deck-instrumental {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: #f4ecff;
+  background: #6b4bb8;
+  box-shadow: 0 0 0 1px rgba(197, 168, 255, 0.55) inset;
+}
+/* MIXAGEM cross-motor em curso: as DUAS faixas tocam ao mesmo tempo (uma
+   descendo, a outra subindo). O selo substitui o CUE no deck que entrou e o
+   contorno âmbar marca os dois decks envolvidos — sem isso a tela parecia
+   parada enquanto o áudio já mixava. */
+.deck-mix {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #1a1004;
+  background: #f0b04a;
+  animation: deck-mix-pulse 0.9s ease-in-out infinite;
+}
+.deck-mix-out {
+  background: #e8a06a;
+}
+.deck.mixing {
+  box-shadow:
+    inset 0 0 0 2px rgba(240, 176, 74, 0.85),
+    inset 0 0 24px rgba(240, 176, 74, 0.18);
+}
+/* barra da faixa que entra pinta em âmbar enquanto sobe o ganho. */
+.deck.mixing-in .deck-prog-fill {
+  background: linear-gradient(90deg, #f0b04a, #ffd79a);
+}
+@keyframes deck-mix-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-mix {
+    animation: none;
+  }
+}
+/* barra de progresso REAL (posição/duração via SDK) — substitui a waveform fake.
+   Fina, embaixo da meta; clicável p/ seek quando há feed real (Spotify). */
+/* Invólucro da visualização (barra OU waveform) + as marcas de análise por cima.
+   A margem superior mora AQUI e não na barra: as marcas usam `inset: 0` e, com a
+   margem na barra, elas cobririam também o espaço em branco acima dela. */
+.deck-viz {
+  position: relative;
+  margin-top: 10px;
+}
+.deck-prog {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.deck-prog.seekable {
+  cursor: pointer;
+  height: 10px;
+}
+
+/* ===== Marcas de análise sobre a barra do deck (trim / vocal / loop / ganho) ===
+   Todas posicionadas por `left: %` sobre `.deck-viz`. `pointer-events: none` é
+   inviolável: a barra é clicável pra seek, e uma marca por cima roubaria o
+   clique justamente onde o operador quer posicionar a música. */
+.deck-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* Zona que o trim corta: hachura diagonal apagada — "isto não vai tocar". Não é
+   vermelho de erro; cortar silêncio é o comportamento desejado. */
+.deck-mark-cut {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.26) 0 2px,
+    transparent 2px 5px
+  );
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 999px;
+}
+/* Base instrumental (do início do áudio até a voz entrar) = o trecho do LOOP. */
+.deck-mark-loop {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--ac-warn-tx) 26%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ac-warn-tx) 55%, transparent);
+  border-radius: 999px;
+}
+.deck-mark-loop.armed {
+  background: color-mix(in srgb, var(--ac-warn-tx) 45%, transparent);
+  animation: deck-loop-pulse 1.1s ease-in-out infinite;
+}
+@keyframes deck-loop-pulse {
+  50% {
+    background: color-mix(in srgb, var(--ac-warn-tx) 18%, transparent);
+  }
+}
+/* Entrada do vocal: tick fino atravessando a barra + o ícone acima dela. O
+   ícone sobe pra FORA da barra (por isso as marcas não são filhas da
+   `.deck-prog`, que tem overflow: hidden). */
+.deck-mark-vocal {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ac-blue-tx);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+}
+.deck-mark-ico {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+/* Selo de ganho: só aparece quando a normalização está mexendo de verdade no
+   volume — knob que age em silêncio é knob que o operador não confia. */
+.deck-mark-gain {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--ac-green-tx);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 13px;
+  letter-spacing: 0.2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-mark-loop.armed {
+    animation: none;
+  }
+}
+.deck-prog.seekable:hover {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+.deck-prog-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  pointer-events: none;
+}
+.deck-a .deck-prog-fill {
+  background: linear-gradient(90deg, #55c98c, #a8f0c8);
+}
+.deck-b .deck-prog-fill {
+  background: linear-gradient(90deg, #3f8fc4, #7fc4ef);
+}
+.deck-prog-head {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--surface);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  transform: translateX(-1px);
+  z-index: 2;
+  pointer-events: none;
+}
+.deck-timers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.05;
+}
+.deck-a .deck-elapsed {
+  color: #b2f2bb;
+}
+.deck-a .deck-remain {
+  color: #ffc9c9;
+}
+.deck-b .deck-elapsed {
+  color: rgba(226, 244, 255, 0.55);
+}
+.deck-b .deck-remain {
+  color: #cfeaff;
+}
+
+/* transport */
+.transport {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  background: linear-gradient(#2a3547, #1e2733);
+  border-top: 2px solid #141c26;
+}
+.tbtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  background: var(--surface);
+  border: 1px solid var(--ant-border);
+  border-radius: var(--ant-radius-sm);
+  color: var(--ant-text-2);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.tbtn:hover:not(:disabled) {
+  border-color: var(--ant-primary);
+  color: var(--ant-primary);
+}
+.tbtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.tbtn .tico {
+  font-size: 18px;
+  line-height: 1;
+}
+.tbtn.small {
+  max-width: 74px;
+}
+/* LIGADO (LOOP, VOZ) — verde claro e AFUNDADO.
+
+   A classe `.active` já era aplicada desde que estes botões existem, mas NÃO havia
+   regra nenhuma para ela: o operador apertava o VOZ, o modo ligava de verdade e a
+   tela não mudava nada. Um botão que é um interruptor tem de parecer apertado.
+
+   Verde (e não o azul primário) porque azul aqui já significa "foco/hover" — o
+   ligado precisa ler de relance, sem comparar com o vizinho. O `inset` é o que dá
+   a impressão de pressionado; a sombra externa dos outros botões faz o oposto
+   (parece levantado). */
+.tbtn.active,
+.tbtn.active:hover:not(:disabled) {
+  background: var(--ac-green-bg);
+  border-color: var(--ac-green-tx);
+  color: var(--ac-green-tx);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+/* Ligado numa faixa que não aceita (VOZ armado, faixa sem instrumental): continua
+   verde para dizer que o MODO está ligado, mas apagado para não prometer que algo
+   está saindo agora. */
+.tbtn.active:disabled {
+  opacity: 0.55;
+}
+.tbtn.play {
+  background: var(--ant-primary);
+  border-color: var(--ant-primary);
+  color: #fff;
+  max-width: 200px;
+  box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
+}
+.tbtn.play:hover:not(:disabled) {
+  background: var(--ant-primary-hover);
+  border-color: var(--ant-primary-hover);
+  color: #fff;
+}
+.tbtn.play .tico {
+  font-size: 22px;
+}
+/* STOP mestre — tira a estação do ar. Vermelho (danger) p/ ler como corte. */
+.tbtn.stop {
+  background: var(--ant-danger);
+  border-color: var(--ant-danger);
+  color: #fff;
+  max-width: 200px;
+  box-shadow: 0 2px 0 rgba(255, 77, 79, 0.1);
+}
+.tbtn.stop:hover:not(:disabled) {
+  background: var(--ant-danger-hover);
+  border-color: var(--ant-danger-hover);
+  color: #fff;
+}
+.tbtn.stop .tico {
+  font-size: 22px;
+}
+/* botões sem endpoint ainda (Épico 4): visíveis p/ paridade, mas inertes */
+.tbtn.soon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+/* ============ RIGHT Web panel ============ */
+/* ============ painel direito multi-modo (Operacional | Internet) ============ */
+.rightpanel {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.rightpanel-head {
+  height: 34px;
+  display: flex;
+  align-items: stretch;
+  position: relative;
+  background: linear-gradient(#4d7fb5, #2f5d8f);
+  color: #eef4fb;
+}
+.rightpanel-modes {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+.rp-mode {
+  flex: 1;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: rgba(238, 244, 251, 0.65);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+.rp-mode:hover {
+  background: rgba(64, 150, 255, 0.12);
+  color: #eef4fb;
+}
+.rp-mode.on {
+  background: rgba(64, 150, 255, 0.16);
+  color: #fff;
+  box-shadow: inset 0 -2px 0 var(--ant-primary-hover);
+}
+.rightpanel-close {
+  width: 34px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.14);
+  color: #eef4fb;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.rightpanel-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+.rightpanel-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* WebPanel headless — miolo do modo Internet */
+.webpanel-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: var(--surface);
+}
+
+/* ============ resizable splitter ============ */
+.panel-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: col-resize;
+  background: #a3b1c4;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.panel-divider:hover,
+.panel-divider.dragging {
+  background: #6d84a0;
+}
+.panel-divider-grip {
+  width: 2px;
+  height: 34px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.webpanel-tabs {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+.ptab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 2px;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line);
+  cursor: pointer;
+  color: var(--txt-2);
+}
+.ptab-ico {
+  font-size: 24px;
+}
+.ptab-lbl {
+  font-size: 12px;
+  font-weight: 600;
+}
+.ptab.active {
+  background: var(--surface);
+  color: var(--green-d);
+  box-shadow: inset 0 -2px 0 var(--green);
+}
+
+.social-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--line);
+}
+.stab {
+  flex: 1;
+  padding: 14px 8px;
+  border: 0;
+  border-right: 1px solid var(--bd);
+  background: var(--surface-2);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--txt-2);
+  cursor: pointer;
+}
+.stab.active {
+  background: var(--surface);
+}
+.stab.s-whatsapp.active {
+  box-shadow: inset 0 -3px 0 #25d366;
+  color: #128c3e;
+}
+.stab.s-twitter.active {
+  box-shadow: inset 0 -3px 0 #1da1f2;
+  color: #0d7fc0;
+}
+.stab.s-facebook.active {
+  box-shadow: inset 0 -3px 0 #1877f2;
+  color: #0d5fc0;
+}
+
+/* embedded browser (iframe / webview) */
+.frame-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: var(--surface);
+}
+.web-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.frame-note {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  background: var(--ac-blue-bg);
+  color: var(--txt-2);
+}
+.fn-ico {
+  font-size: 46px;
+}
+.fn-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--green-d);
+}
+.fn-sub {
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 300px;
+}
+.fn-sub code {
+  background: var(--surface-3);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.fn-open {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--green);
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+.fn-open:hover {
+  background: var(--green-d);
+}
+
+/* live pill */
+/* ============ LOCUÇÃO AO VIVO — linha laranja (playing row variant) ============ */
+.pr.pr-live {
+  background: linear-gradient(#e8871e, #c96a10);
+  border-top: 1px solid #a4530b;
+  border-bottom: 1px solid #a4530b;
+}
+.pr-live .pr-ico {
+  color: #fff3e0;
+}
+.pr-live .pr-artist,
+.pr-live .pr-title {
+  color: #fff8f0;
+}
+.pr-timers-live {
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
+  font-size: 22px;
+}
+.pr-live .pr-up {
+  color: #fff8f0;
+}
+.pr-live .pr-down {
+  color: #ffe3d0;
+}
+.pr-wall {
+  color: #fff8f0;
+}
+.pr-tico {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* ============ TELEPROMPTER — "TEXTO PARA LOCUÇÃO AO VIVO" ============ */
+.loc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ant-mask);
+  animation: ant-mask-in 0.24s ease-out;
+}
+.loc-modal {
+  width: 560px;
+  max-width: 92vw;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--ant-radius);
+  box-shadow: var(--ant-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: ant-zoom-in 0.24s var(--ant-ease);
+}
+.loc-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--ant-primary);
+  color: #fff;
+}
+.loc-mic {
+  font-size: 16px;
+}
+.loc-title {
+  flex: 1;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+.loc-wbtns {
+  display: flex;
+  gap: 4px;
+}
+.loc-wbtn {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--ant-radius-sm);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.loc-wbtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.loc-wbtn.close:hover {
+  background: var(--ant-danger);
+}
+.loc-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--surface-3);
+  border-bottom: 1px solid #cdd5e0;
+}
+.loc-font {
+  min-width: 38px;
+  height: 26px;
+  border: 1px solid #a9b4c4;
+  border-radius: 4px;
+  background: var(--surface);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--txt-2);
+  cursor: pointer;
+}
+.loc-font:hover {
+  background: var(--surface-2);
+}
+.loc-script {
+  padding: 16px 18px;
+  min-height: 180px;
+  max-height: 46vh;
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--txt);
+  line-height: 1.5;
+}
+.loc-line {
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+.loc-progress {
+  height: 10px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.loc-pfill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #2f6fd0, #4a90e2);
+}
+.loc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--surface-3);
+  border-top: 1px solid #cdd5e0;
+}
+.loc-elapsed {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--txt);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.loc-clock {
+  font-size: 13px;
+}
+.loc-controls {
+  display: flex;
+  gap: 6px;
+}
+.loc-ctl {
+  width: 40px;
+  height: 30px;
+  border: 1px solid #a9b4c4;
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 14px;
+  color: var(--txt-2);
+  cursor: pointer;
+}
+.loc-ctl:hover {
+  background: var(--surface-2);
+}
+
+/* ============ OPERACIONAL — container ============ */
+.opscreen {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface-2);
+  padding: 8px;
+  gap: 8px;
+}
+.opscreen-head {
+  display: flex;
+  flex-wrap: wrap; /* narrow panel: action buttons flow onto more rows, never clip */
+  align-items: center;
+  gap: 6px; /* tighter — reclaim vertical space for the media list */
+  padding: 5px 8px;
+  background: linear-gradient(#cddcf1, #b6cbe8);
+  border: 1px solid #8fb0d6;
+  border-radius: 8px;
+  color: var(--ac-blue-tx);
+  font-weight: 800;
+}
+.opscreen-title {
+  /* small inline chip on the same row as the buttons — the full-width title
+     row was redundant with the "Operacional" tab already shown on top. */
+  flex: 0 0 auto;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  padding-right: 8px;
+  margin-right: 2px;
+  border-right: 1px solid rgba(47, 111, 208, 0.28);
+  white-space: nowrap;
+}
+.opscreen-mix {
+  flex: 0 0 auto;
+  border: 1px solid #6b93c7;
+  background: var(--ac-blue-bg);
+  color: var(--ac-blue-tx);
+  font-weight: 700;
+  font-size: 11.5px;
+  padding: 5px 9px;
+  border-radius: 999px; /* pill — matches compact category strip below */
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.opscreen-mix:hover {
+  background: var(--surface);
+}
+/* botão de função desligado (ex.: Locutor com IA): fica VISÍVEL — o usuário quer
+   ver que a função existe — mas sem clique, sem hover e claramente esmaecido. */
+.opscreen-mix:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(0.65);
+}
+.opscreen-mix:disabled:hover {
+  background: var(--ac-blue-bg);
+}
+.opscreen-add {
+  flex: 0 0 auto;
+  border: 1px solid #2f7a4a;
+  background: var(--ac-green-bg);
+  color: var(--ac-green-tx);
+  font-weight: 700;
+  font-size: 11.5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.opscreen-add:hover:not(:disabled) {
+  background: var(--surface);
+}
+/* sem servidor o envio não existe — apagado e sem hover, igual aos chips de
+   Spotify/YouTube. Botão que parece clicável e só dá erro é pior que botão morto. */
+.opscreen-add:disabled {
+  opacity: 0.42;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+/* ---- barra de categorias ---- */
+.opcat-bar {
+  /* pills inline que fluem em poucas linhas — antes eram cards altos de 2
+     linhas (3 linhas de grid) que comiam ~270px. Agora ~2 linhas curtas,
+     devolvendo o espaço p/ a lista de mídias. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.opcat {
+  display: inline-flex;
+  flex-direction: row; /* ícone + rótulo lado a lado numa linha só */
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid var(--ant-border);
+  border-radius: 999px; /* pill */
+  background: var(--surface);
+  color: var(--ant-text-2);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 0;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.opcat:hover {
+  border-color: var(--ant-primary);
+  color: var(--ant-primary);
+}
+.opcat.on {
+  background: var(--ant-primary-bg);
+  border-color: var(--ant-primary);
+  color: var(--ant-primary-active);
+  box-shadow: var(--ant-focus);
+}
+/* chip desabilitado (ex.: Músicas sem faixa local): esmaecido, sem hover/clique */
+.opcat.off,
+.opcat.off:hover {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--surface);
+  border-color: var(--ant-border);
+  color: var(--ant-text-2);
+  box-shadow: none;
+}
+.opcat-ico {
+  font-size: 15px;
+  line-height: 1;
+  /* emoji e SVG assentam diferente na linha de base; o flex centraliza os dois
+     igual, senão o logo fica meio pixel acima do rótulo. */
+  display: inline-flex;
+  align-items: center;
+}
+/* logo de marca (Spotify/YouTube) inline com o texto, em qualquer contexto */
+.brand-ico {
+  display: block;
+  flex: none;
+}
+.opcat-lbl {
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* ---- Apresentação do AutoDJ (aba de entrada do painel) ----------------------
+   Só tokens semânticos: o tema escuro herda sem uma linha a mais.
+   A quebra é por CONTAINER e não por viewport — o painel é uma coluna que o
+   operador arrasta (PanelDivider), então quem manda é a largura DELE. Uma media
+   query aqui daria 2 colunas num painel estreito só porque a tela é grande. */
+.about {
+  container-type: inline-size;
+  padding: 4px 2px 10px;
+}
+/* entrada escalonada: cada peça carrega seu índice em `--i` e entra um pouco
+   depois da anterior. Sem biblioteca e sem JS por quadro. */
+.about-hero,
+.about-card,
+.about-foot {
+  animation: about-in 0.44s cubic-bezier(0.22, 0.68, 0.35, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms + 40ms);
+}
+@keyframes about-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 16px 20px;
+  border: 1px solid var(--bd);
+  border-radius: 14px;
+  background: linear-gradient(160deg, var(--ac-blue-bg), var(--surface) 70%);
+  text-align: center;
+}
+.about-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--txt);
+}
+.about-mark {
+  color: var(--ac-blue-tx);
+  /* o triângulo é a marca do titlebar; aqui ele respira devagar pra dar vida à
+     tela sem virar pisca-pisca. */
+  animation: about-mark 3.2s ease-in-out infinite;
+}
+@keyframes about-mark {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translateY(-3px) scale(1.08);
+    opacity: 1;
+  }
+}
+.about-tag {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--txt-2);
+  max-width: 34ch;
+}
+.about-ver {
+  margin-top: 2px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--bd);
+  background: var(--surface);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--txt-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* equalizador: 5 barras com durações e atrasos diferentes. O desencontro é o que
+   faz parecer música em vez de metrônomo. */
+.about-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 26px;
+  margin-bottom: 2px;
+}
+.about-eq i {
+  display: block;
+  width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ac-blue-tx);
+  transform-origin: bottom;
+  opacity: 0.85;
+  animation: about-eq 1.05s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -0.19s);
+  animation-duration: calc(0.72s + var(--i) * 0.11s);
+}
+@keyframes about-eq {
+  from {
+    transform: scaleY(0.22);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* 2 colunas só quando o PAINEL tem largura pra isso */
+@container (min-width: 430px) {
+  .about-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.about-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid var(--bd);
+  border-left-width: 3px;
+  border-radius: 11px;
+  background: var(--surface);
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+}
+.about-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.09);
+}
+.about-ico {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  font-size: 16px;
+  line-height: 1;
+}
+.about-card-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.about-card-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--txt);
+  line-height: 1.2;
+}
+.about-card-desc {
+  font-size: 12.5px;
+  line-height: 1.42;
+  color: var(--txt-2);
+}
+/* acento por cartão — só famílias de token, nada literal */
+.about-green {
+  border-left-color: var(--ac-green-tx);
+}
+.about-green .about-ico {
+  background: var(--ac-green-bg);
+}
+.about-blue {
+  border-left-color: var(--ac-blue-tx);
+}
+.about-blue .about-ico {
+  background: var(--ac-blue-bg);
+}
+.about-purple {
+  border-left-color: var(--ac-purple-tx);
+}
+.about-purple .about-ico {
+  background: var(--ac-purple-bg);
+}
+.about-warn {
+  border-left-color: var(--ac-warn-tx);
+}
+.about-warn .about-ico {
+  background: var(--ac-warn-bg);
+}
+
+.about-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  text-align: center;
+}
+.about-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  border: 1px solid var(--ant-primary);
+  border-radius: 999px;
+  background: var(--ant-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.16s, box-shadow 0.16s, filter 0.16s;
+}
+.about-cta:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+}
+.about-cta:active {
+  transform: none;
+}
+
+/* Movimento é enfeite: quem pediu pra reduzir recebe a tela inteira, parada. */
+@media (prefers-reduced-motion: reduce) {
+  .about-hero,
+  .about-card,
+  .about-foot,
+  .about-mark,
+  .about-eq i {
+    animation: none;
+  }
+  .about-eq i {
+    transform: scaleY(0.6);
+  }
+  .about-card:hover,
+  .about-cta:hover {
+    transform: none;
+  }
+}
+
+/* ---- sub-abas ---- */
+/* ---- busca rápida da lista de mídias (barra ampla e destacada) ---- */
+.opsearch {
+  flex: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+  padding: 0 8px 0 16px;
+  background: linear-gradient(#ffffff, #f4f6fb);
+  border: 1.5px solid #c4cbdd;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(20, 30, 60, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+.opsearch:hover {
+  border-color: #aab3ca;
+}
+.opsearch:focus-within {
+  border-color: #2f6fd0;
+  box-shadow: 0 0 0 4px rgba(47, 111, 208, 0.18), 0 4px 14px rgba(47, 111, 208, 0.16);
+}
+.opsearch.empty:focus-within {
+  border-color: #d64545;
+  box-shadow: 0 0 0 4px rgba(214, 69, 69, 0.16);
+}
+.opsearch-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--txt);
+}
+.opsearch-input::placeholder {
+  color: var(--txt-3);
+  font-weight: 500;
+}
+.opsearch-count {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ac-blue-tx);
+  white-space: nowrap;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(47, 111, 208, 0.1);
+}
+.opsearch-count.zero {
+  color: var(--ac-danger-tx);
+  background: rgba(214, 69, 69, 0.12);
+}
+.opsearch-clear {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--txt-2);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.opsearch-clear:hover {
+  background: #d64545;
+  color: #fff;
+}
+.opsearch-kbd {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  padding: 0 7px;
+  border: 1px solid #cfd5e4;
+  border-bottom-width: 2px;
+  border-radius: 7px;
+  background: var(--ac-blue-bg);
+  color: var(--txt-3);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ---- sub-abas biblioteca: segmented control com pill deslizante ---- */
+.opsub2 {
+  position: relative;
+  display: flex;
+  gap: 0;
+  padding: 4px;
+  background: linear-gradient(#e7eaf4, #dce0ee);
+  border: 1px solid #c3c7d6;
+  border-radius: 10px;
+  box-shadow: inset 0 1px 2px rgba(31, 42, 68, 0.12);
+}
+.opsub2-glide {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  border-radius: 7px;
+  background: var(--surface);
+  border: 1px solid #b9c0d6;
+  box-shadow: 0 2px 6px rgba(31, 42, 68, 0.2);
+  transition: transform 0.22s cubic-bezier(0.4, 0.9, 0.3, 1);
+  pointer-events: none;
+}
+.opsub2-tab {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 6px;
+  border: none;
+  background: transparent;
+  color: var(--txt-2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.opsub2-tab:hover:not(.on) {
+  color: var(--txt-2);
+}
+.opsub2-tab.on {
+  color: var(--txt);
+}
+.opsub2-ico {
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.55;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+.opsub2-tab.on .opsub2-ico {
+  opacity: 1;
+  transform: scale(1.12);
+}
+.opsub2-lbl {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- chaveador do motor de busca do YouTube (0.2.17) ----
+   mesma gramática visual do .opsub2 (pill deslizante), em escala menor: mora DENTRO
+   da sub-aba "Buscar", logo abaixo do segmented control das sub-abas. Só tokens —
+   nada hardcodado, o dark herda de graça. `container-type: inline-size` deixa as
+   dicas ("cota livre" / "~100 buscas/dia") sumirem quando o painel encolhe, sem
+   depender da largura do viewport (o painel é uma coluna, não a tela). */
+.ytbk {
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  gap: 0;
+  padding: 4px;
+  background: var(--surface-3);
+  border: 1px solid var(--bd);
+  border-radius: 11px;
+  box-shadow: inset 0 1px 2px rgba(31, 42, 68, 0.1);
+}
+.ytbk-glide {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--bd-2);
+  box-shadow: 0 2px 8px rgba(31, 42, 68, 0.18);
+  transition: transform 0.26s cubic-bezier(0.4, 0.9, 0.3, 1);
+  pointer-events: none;
+}
+.ytbk-opt {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  color: var(--txt-3);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.ytbk-opt:hover:not(.on) {
+  color: var(--txt-2);
+}
+.ytbk-opt.on {
+  color: var(--txt);
+}
+.ytbk-ico {
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.5;
+  transition: opacity 0.18s, transform 0.18s cubic-bezier(0.4, 0.9, 0.3, 1);
+}
+.ytbk-opt.on .ytbk-ico {
+  opacity: 1;
+  transform: scale(1.16);
+}
+.ytbk-txt {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ytbk-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ytbk-hint {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--txt-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.7;
+  transition: opacity 0.18s;
+}
+.ytbk-opt.on .ytbk-hint {
+  opacity: 1;
+}
+/* painel estreito: some a dica, fica só ícone + rótulo (ambos ainda legíveis) */
+@container (max-width: 300px) {
+  .ytbk-hint {
+    display: none;
+  }
+  .ytbk-opt {
+    gap: 5px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ytbk-glide,
+  .ytbk-ico,
+  .ytbk-hint,
+  .ytbk-opt {
+    transition: none;
+  }
+  .ytbk-opt.on .ytbk-ico {
+    transform: none;
+  }
+}
+
+/* ---- pastas ---- */
+.opfolders {
+  flex: none;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border: 1px solid #c3d0bd;
+  border-radius: 6px;
+}
+.opfolder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 82px;
+  padding: 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #2f3a26;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.opfolder:hover {
+  background: #e2ebda;
+}
+.opfolder.on {
+  border-color: #7fa15f;
+  background: #dceaccf0;
+}
+.opfolder-ico {
+  font-size: 34px;
+  line-height: 1;
+}
+.opfolder-name {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ---- lista de mídias (único scroller do painel; ocupa espaço restante) ---- */
+.opmedia {
+  background: var(--surface);
+  border: 1px solid #c3c7d6;
+  border-radius: 6px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.opmedia-count {
+  flex: none;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt-2);
+  padding: 4px;
+  background: var(--surface-2);
+  border-bottom: 1px solid #d3d7e2;
+}
+.opmedia-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.opmedia-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.opmedia-tbl thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ant-text-3);
+  letter-spacing: 0.3px;
+  padding: 7px 10px;
+  background: var(--ant-fill);
+  border-bottom: 1px solid var(--ant-border);
+}
+.opmedia-tbl th.c-dur,
+.opmedia-tbl td.c-dur {
+  text-align: right;
+  white-space: nowrap;
+}
+.opmedia-tbl th.c-ico {
+  width: 38px;
+}
+.opmedia-row {
+  cursor: pointer;
+  border-bottom: 1px solid var(--ant-border-2);
+  transition: background 0.14s;
+}
+.opmedia-row:nth-child(even) {
+  background: var(--surface-2);
+}
+.opmedia-row:hover {
+  background: var(--ant-primary-bg);
+}
+.opmedia-row.sel {
+  background: var(--ant-primary-bg);
+  color: var(--ant-primary-active);
+  box-shadow: inset 3px 0 0 var(--ant-primary);
+}
+.opmedia-row.sel td {
+  font-weight: 600;
+}
+.opmedia-row.sel .c-dur {
+  color: var(--ant-primary-active);
+}
+.opmedia-row td {
+  padding: 5px 8px;
+  color: var(--txt); /* todas as linhas na mesma cor sólida (não esmaecer as não-selecionadas) */
+}
+.opmedia-row .c-ico {
+  text-align: center;
+  font-size: 13px;
+  padding: 3px 6px;
+  line-height: 0;
+}
+/* capa clicável (TrackCover c/ onClick) em QUALQUER lugar — deck, fila, tocadas,
+   Mídias: cursor de lupa (zoom-in) + realce no hover. O .cover-click vem da própria
+   capa (TrackCover), então a regra pega deck/fila/histórico, não só a lista. */
+.track-cover.cover-click {
+  cursor: zoom-in;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.track-cover.cover-click:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+/* capa clicável → popup de detalhes: cursor de zoom + realce no hover. */
+.opmedia-row .c-cover {
+  cursor: zoom-in;
+}
+.opmedia-row .c-cover .track-cover {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.opmedia-row .c-cover:hover .track-cover {
+  transform: scale(1.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.opmedia-row.spotsrc .c-artist::after {
+  content: " · Spotify";
+  color: #1db954;
+  font-size: 10px;
+  font-weight: 700;
+}
+.opmedia-mk {
+  margin-left: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--ac-danger-tx);
+  letter-spacing: 1px;
+}
+
+/* ============ MARCAÇÕES ESPECIAIS (waveform editor) ============ */
+/* ---- menu flutuante da lista de mídias (clique / botão direito) ---- */
+.opctx {
+  position: fixed;
+  z-index: 60;
+  min-width: 220px;
+  padding: 5px;
+  background: var(--surface);
+  border: 1px solid #b6bccb;
+  border-radius: 9px;
+  box-shadow: 0 12px 32px rgba(20, 30, 60, 0.28), 0 2px 6px rgba(20, 30, 60, 0.16);
+  font-size: 13px;
+  animation: opctx-in 90ms ease-out;
+}
+@keyframes opctx-in {
+  from { opacity: 0; transform: scale(0.97) translateY(-2px); }
+  to { opacity: 1; transform: none; }
+}
+.opctx-head {
+  padding: 6px 10px 7px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--bd-2);
+  color: var(--txt-2);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.opctx-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--txt);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.opctx-item:hover {
+  background: var(--surface-2);
+}
+.opctx-item.primary {
+  color: var(--ac-green-tx);
+}
+.opctx-item.primary:hover {
+  background: var(--ac-green-bg);
+}
+.opctx-item.danger {
+  color: var(--ac-danger-tx);
+}
+.opctx-item.danger:hover {
+  background: var(--ac-danger-bg);
+}
+.opctx-ico {
+  width: 18px;
+  text-align: center;
+  font-size: 14px;
+}
+.opctx-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--surface-2);
+}
+
+/* ---- modal Marcações Especiais (aberto pelo menu) ---- */
+.mk-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--ant-mask);
+  animation: ant-mask-in 0.24s ease-out;
+}
+.mk-overlay .mk {
+  flex: none;
+  width: min(720px, 96vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--ant-shadow);
+  animation: ant-zoom-in 0.24s var(--ant-ease);
+}
+.mk-overlay .mk-wave {
+  height: clamp(150px, 34vh, 300px);
+}
+
+.mk {
+  flex: none;
+  border: none;
+  border-radius: var(--ant-radius);
+  overflow: hidden;
+  background: var(--surface);
+}
+.mk-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--surface);
+  color: var(--ant-text);
+  font-size: 15px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--ant-border-2);
+}
+.mk-ico {
+  font-size: 14px;
+}
+.mk-title {
+  flex: 1;
+}
+.mk-wbtns {
+  display: flex;
+  gap: 4px;
+}
+.mk-wbtn {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--ant-radius-sm);
+  background: transparent;
+  color: var(--ant-text-3);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.mk-wbtn:hover {
+  background: var(--ant-fill);
+  color: var(--ant-text);
+}
+.mk-wbtn.close:hover {
+  background: var(--ant-danger);
+  color: #fff;
+}
+.mk-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: var(--surface-2);
+  border-bottom: 1px solid #c3c7d6;
+}
+.mk-marker {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 2px solid;
+  border-radius: 5px;
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--txt);
+  cursor: pointer;
+}
+.mk-marker:hover {
+  background: #f4f6fb;
+}
+.mk-select {
+  min-width: 140px;
+  padding: 4px;
+  border: 1px solid #a9b0c4;
+  border-radius: 4px;
+}
+.mk-wave {
+  position: relative;
+  height: clamp(72px, 12vh, 150px);
+  margin: 8px;
+  border: 1px solid #3a3a3a;
+  background: #111417;
+  overflow: hidden;
+}
+.mk-flag {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 2;
+}
+.mk-flag::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -3px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 6px solid currentColor;
+  color: inherit;
+}
+.mk-bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 0 2px;
+}
+.mk-bar {
+  flex: 1;
+  min-width: 1px;
+  background: linear-gradient(#f0a868, #d97b3a);
+  align-self: center;
+}
+.mk-nowline {
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--txt);
+  background: var(--surface-3);
+}
+.mk-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: var(--surface-3);
+  border-top: 1px solid #b3b9cc;
+}
+.mk-elapsed {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--txt);
+}
+.mk-transport {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+.mk-ctl {
+  min-width: 60px;
+  height: 28px;
+  border: 1px solid #9098ae;
+  border-radius: 4px;
+  background: var(--surface-2);
+  font-size: 13px;
+  cursor: pointer;
+}
+.mk-ctl.mk-more {
+  min-width: 40px;
+}
+.mk-autoplay {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--txt);
+}
+.mk-head {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  z-index: 3;
+  background: var(--surface);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+}
+.mk-wave {
+  cursor: crosshair;
+}
+.mk-drm {
+  padding: 28px 20px;
+  font-size: 13px;
+  color: var(--ac-warn-tx);
+  background: var(--ac-warn-bg);
+  border-top: 1px solid #e2c98a;
+  text-align: center;
+}
+.mk-cuelist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: var(--surface-2);
+  border-top: 1px solid #c3c7d6;
+  min-height: 34px;
+}
+.mk-cue-empty {
+  font-size: 12px;
+  color: var(--txt-3);
+}
+.mk-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px 3px 8px;
+  border: 1px solid #b7bccb;
+  border-left-width: 3px;
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt);
+}
+.mk-cue-del {
+  border: none;
+  background: transparent;
+  color: var(--ac-danger-tx);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.mk-cue-del:hover {
+  color: var(--ac-danger-tx);
+}
+.mk-save {
+  background: #2f6fd0;
+  color: #fff;
+  border-color: #245aab;
+  font-weight: 700;
+}
+.mk-save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.mk-err {
+  font-size: 12px;
+  color: var(--ac-danger-tx);
+  font-weight: 700;
+}
+.mk-loading {
+  color: var(--txt-3);
+  font-style: italic;
+}
+
+/* ============ CARTWALL (Instantâneas) ============ */
+.cw {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cw-tabs {
+  display: flex;
+  gap: 4px;
+}
+.cw-tab {
+  padding: 6px 16px;
+  border: 1px solid #b7bccb;
+  border-bottom: none;
+  border-radius: 7px 7px 0 0;
+  background: var(--surface-2);
+  color: var(--txt-2);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cw-tab.on {
+  background: var(--surface);
+  color: var(--txt);
+}
+.cw-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.cw-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 92px;
+  padding: 8px;
+  border: 1px solid #b7b0c8;
+  border-radius: 8px;
+  color: var(--ac-purple-tx);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.cw-btn:hover {
+  filter: brightness(1.05);
+}
+.cw-btn:active {
+  filter: brightness(0.94);
+}
+.cw-dur {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--txt);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: 0 5px;
+}
+.cw-ico {
+  font-size: 22px;
+}
+.cw-lbl {
+  text-align: center;
+  line-height: 1.15;
+}
+.cw-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: var(--surface-3);
+  border: 1px solid #b3b9cc;
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+.cw-opt {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--txt);
+}
+.cw-spacer {
+  flex: 1;
+}
+.cw-fbtn {
+  padding: 5px 10px;
+  border: 1px solid #9098ae;
+  border-radius: 4px;
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cw-fbtn.on {
+  background: #2f6b3f;
+  border-color: #245331;
+  color: #fff;
+}
+.cw-hk {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  min-width: 16px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(40, 36, 64, 0.72);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+.cw-err {
+  padding: 5px 10px;
+  background: var(--ac-danger-bg);
+  border: 1px solid #e0a3a3;
+  border-radius: 5px;
+  color: var(--ac-danger-tx);
+  font-size: 12px;
+  font-weight: 700;
+}
+.cw-empty {
+  grid-column: 1 / -1;
+  padding: 18px;
+  text-align: center;
+  color: var(--txt-3);
+  font-size: 12px;
+}
+.cw-edit {
+  gap: 5px;
+  cursor: default;
+}
+.cw-clash {
+  outline: 2px solid #d23b3b;
+  outline-offset: -2px;
+}
+.cw-ein,
+.cw-esel,
+.cw-ekey {
+  width: 100%;
+  border: 1px solid #a6a0bc;
+  border-radius: 4px;
+  font-size: 10px;
+  padding: 2px 4px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ac-purple-tx);
+}
+.cw-erow {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  align-items: center;
+}
+.cw-ekey {
+  width: 46px;
+  text-align: center;
+}
+.cw-edel {
+  flex: 1;
+  border: 1px solid #c98;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #922;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ============ SPOTIFY PANEL ============ */
+.spot {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid #c3c7d6;
+  border-radius: 6px;
+  padding: 12px;
+  /* preenche o .opscreen (que é overflow:hidden) e permite encolher, senão a
+     lista de resultados clipa no rodapé e as playlists somem — não rolava. */
+  flex: 1;
+  min-height: 0;
+}
+.spot-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.spot-logo {
+  font-weight: 800;
+  color: #1db954;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.spot-conn.on {
+  color: #1db954;
+  font-weight: 700;
+  font-size: 12px;
+}
+.spot-connect {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  background: #1db954;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+.spot-connect:hover {
+  background: #1ed760;
+}
+.spot-warn {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ac-warn-tx);
+  background: var(--ac-warn-bg);
+  border: 1px solid #f0c987;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.spot-search {
+  display: flex;
+  gap: 6px;
+}
+.spot-input {
+  flex: 1;
+  padding: 7px 10px;
+  border: 1px solid #b7bccb;
+  border-radius: 5px;
+  font-size: 13px;
+}
+.spot-input:disabled {
+  background: var(--surface-2);
+}
+.spot-btn {
+  padding: 7px 16px;
+  border: 1px solid #1db954;
+  border-radius: 5px;
+  background: #1db954;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.spot-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.spot-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  /* rola só a lista; busca/status ficam fixos acima. min-height:0 deixa o flex
+     item encolher abaixo do conteúdo p/ o overflow valer. */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.spot-results.off {
+  opacity: 0.5;
+}
+.spot-hit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--bd-2);
+}
+.spot-hit:last-child {
+  border-bottom: none;
+}
+.spot-hit-ico {
+  font-size: 15px;
+}
+.spot-hit-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.spot-hit-body b {
+  font-size: 13px;
+  color: var(--txt);
+}
+.spot-hit-body small {
+  font-size: 11px;
+  color: var(--txt-2);
+}
+.spot-hit-dur {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--txt-2);
+}
+.spot-hit-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ac-warn-tx);
+  background: var(--ac-warn-bg);
+  border: 1px solid #f0c987;
+  border-radius: 10px;
+  padding: 1px 8px;
+}
+.spot-hit-add {
+  padding: 4px 10px;
+  border: 1px solid #1db954;
+  border-radius: 4px;
+  background: var(--surface);
+  color: #1db954;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+.spot-hit-add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---- resultados de busca (SpotifyResults) ---- */
+.spot-conn.off {
+  color: var(--txt-3);
+  font-size: 12px;
+}
+.spot-warn.spot-ok {
+  color: var(--ac-green-tx);
+  background: var(--ac-green-bg);
+  border-color: #a6e0be;
+}
+.spot-warn.spot-err {
+  color: var(--ac-danger-tx);
+  background: var(--ac-danger-bg);
+  border-color: #f0b3b3;
+}
+.spot-kind-sel {
+  padding: 6px 8px;
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 12px;
+}
+.spot-empty {
+  padding: 10px;
+  font-size: 12px;
+  color: var(--txt-2);
+  text-align: center;
+}
+.spot-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--bd-2);
+}
+.spot-row:last-child {
+  border-bottom: none;
+}
+.spot-row.playing {
+  background: var(--ac-green-bg);
+}
+.spot-kind {
+  font-size: 11px;
+  color: var(--txt-2);
+  min-width: 74px;
+}
+.spot-play {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #1db954;
+  border-radius: 50%;
+  background: var(--surface);
+  color: #1db954;
+  font-size: 12px;
+  cursor: pointer;
+  flex: none;
+}
+.spot-play:hover {
+  background: #1db954;
+  color: #fff;
+}
+.spot-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.spot-title {
+  font-size: 13px;
+  color: var(--txt);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.spot-artist {
+  font-size: 11px;
+  color: var(--txt-2);
+}
+.spot-dur {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--txt-2);
+}
+/* .spot-badge/.spot-badge.drm ("não-mixável") saíram na 0.2.14 — o selo repetia a
+   mesma informação em toda linha de resultado e foi removido a pedido do usuário. */
+
+/* ---- card hero de conexão (estado configurado + desconectado) ---- */
+.spot-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  padding: 26px 20px;
+  background: linear-gradient(180deg, #f4fbf6, #ffffff);
+  border: 1px solid #cfe9d8;
+  border-radius: 10px;
+}
+.spot-hero-logo {
+  font-size: 34px;
+  line-height: 1;
+}
+.spot-hero-title {
+  margin: 2px 0 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ac-green-tx);
+}
+.spot-hero-sub {
+  margin: 0;
+  max-width: 420px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+.spot-hero-btn {
+  margin-top: 6px;
+  padding: 10px 26px;
+  border: none;
+  border-radius: 22px;
+  background: #1db954;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.spot-hero-btn:hover:not(:disabled) {
+  background: #1ed760;
+}
+.spot-hero-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.spot-hero-note {
+  margin: 4px 0 0;
+  max-width: 420px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--txt-3);
+}
+
+/* ---- barra de status (conectado) ---- */
+.spot-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* referencial do painel de diagnóstico (.spdiag-out é absolute) */
+  position: relative;
+}
+.spot-chip {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--txt-2);
+  background: var(--surface-2);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 2px 10px;
+}
+.spot-chip.prem {
+  color: var(--ac-green-tx);
+  background: var(--ac-green-bg);
+  border-color: #a6e0be;
+}
+/* conta desconectada quando a conexão é OPCIONAL (YouTube 0.2.17): tom apagado,
+   sem vermelho — não é erro, é só "você ainda não conectou (e nem precisa)". */
+.spot-chip.spot-chip-off {
+  color: var(--txt-3);
+  background: transparent;
+  border-style: dashed;
+  font-weight: 600;
+}
+/* Diagnóstico do Spotify — botão + passo a passo. `margin-left: auto` aqui empurra
+   o par (Diagnosticar + Desconectar) pra direita da barra de status; o .spot-disc
+   perde o dele pra os dois ficarem colados. */
+.spdiag {
+  margin-left: auto;
+}
+.spdiag-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--txt-2);
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+.spdiag-btn:hover:not(:disabled) {
+  border-color: var(--bd-2);
+  color: var(--txt);
+}
+.spdiag-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+/* o resultado sai do fluxo da barra e ocupa a largura do painel */
+.spdiag-out {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  margin-top: 8px;
+  z-index: 20;
+  padding: 10px 12px;
+  border-radius: var(--ant-radius);
+  border: 1px solid var(--bd);
+  background: var(--surface);
+  box-shadow: var(--ant-shadow);
+  font-size: 12px;
+}
+.spdiag-out.ok {
+  border-color: var(--ac-green-bg);
+}
+.spdiag-out.bad {
+  border-color: var(--ac-danger-bg);
+}
+.spdiag-steps {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.spdiag-steps li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  line-height: 1.35;
+}
+.spdiag-ico {
+  flex: none;
+  width: 16px;
+  text-align: center;
+  font-weight: 800;
+}
+.spdiag-steps li.on .spdiag-ico {
+  color: var(--ac-green-tx);
+}
+.spdiag-steps li.off .spdiag-ico {
+  color: var(--ac-danger-tx);
+}
+.spdiag-txt {
+  color: var(--txt-2);
+}
+.spdiag-steps li.off .spdiag-txt {
+  color: var(--txt);
+}
+/* a dica é o que fazer — vai em bloco próprio pra não se perder no meio da frase */
+.spdiag-hint {
+  display: block;
+  margin-top: 3px;
+  font-style: normal;
+  color: var(--ac-danger-tx);
+  font-weight: 600;
+}
+.spdiag-verdict {
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--bd);
+  font-weight: 700;
+  color: var(--txt);
+}
+
+.spot-disc {
+  padding: 5px 12px;
+  border: 1px solid #cdd2e0;
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--txt-2);
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+.spot-disc:hover:not(:disabled) {
+  border-color: #b7bccb;
+  color: var(--txt-2);
+}
+
+/* ---- nota discreta (substitui o alerta laranja pesado) ---- */
+.spot-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--txt-3);
+  background: #f7f8fb;
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+/* ---- sub-aba "Colar links" do YouTube (0.2.17, sem login) ---- */
+.yt-paste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.yt-paste-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--txt-2);
+}
+/* o "campo multi line enorme": a caixa é o centro da sub-aba, então nasce alta e
+   só cresce (resize vertical). Fonte mono porque o conteúdo é URL — alinhamento
+   ajuda a bater o olho e ver link truncado/colado errado. */
+.yt-paste-ta {
+  min-height: 190px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--txt);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.yt-paste-ta:focus {
+  outline: none;
+  border-color: var(--ac-blue-tx);
+}
+.yt-paste-ta::placeholder {
+  color: var(--txt-3);
+}
+.yt-paste-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.yt-paste-count {
+  font-size: 11px;
+  color: var(--txt-3);
+}
+.yt-paste-chk {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--txt-2);
+  cursor: pointer;
+  user-select: none;
+}
+.yt-paste-btn {
+  padding: 7px 16px;
+  border: 1px solid var(--ac-blue-tx);
+  border-radius: 16px;
+  background: var(--ac-blue-bg);
+  color: var(--ac-blue-tx);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+.yt-paste-btn:hover:not(:disabled) {
+  filter: brightness(0.97);
+}
+.yt-paste-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---- guia de setup (integração não configurada) ---- */
+.spot-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: linear-gradient(180deg, #f4fbf6, #ffffff);
+  border: 1px solid #cfe9d8;
+  border-radius: 10px;
+}
+.spot-setup-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.spot-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #374151;
+}
+.spot-steps a {
+  color: #1db954;
+  font-weight: 700;
+  text-decoration: none;
+}
+.spot-steps a:hover {
+  text-decoration: underline;
+}
+.spot-code {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.spot-code code {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: var(--txt);
+  background: var(--surface-2);
+  border: 1px solid var(--bd);
+  border-radius: 5px;
+  padding: 6px 9px;
+}
+.spot-code button {
+  flex: none;
+  padding: 6px 12px;
+  border: 1px solid #1db954;
+  border-radius: 5px;
+  background: var(--surface);
+  color: #1db954;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+.spot-code button:hover {
+  background: #1db954;
+  color: #fff;
+}
+
+/* ---- prévia isolada Web Playback SDK (SpotifyPlayer, Story 6.3) ---- */
+.spot-player {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #cfe9d8;
+  border-radius: 6px;
+  background: var(--ac-green-bg);
+}
+.spot-player-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.spot-player-time {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--txt-2);
+}
+.spot-player-bar {
+  margin-top: 8px;
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.spot-player-fill {
+  height: 100%;
+  background: #1db954;
+  transition: width 0.25s linear;
+}
+
+/* ============ CONFIGURAÇÃO DE MIXAGEM (modal) ============ */
+.mix-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ant-mask);
+  animation: ant-mask-in 0.24s ease-out;
+}
+.mix-modal {
+  width: 620px;
+  max-width: 94vw;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--ant-radius);
+  box-shadow: var(--ant-shadow);
+  animation: ant-zoom-in 0.24s var(--ant-ease);
+}
+.mix-titlebar {
+  padding: 14px 18px;
+  background: var(--surface);
+  color: var(--ant-text);
+  font-weight: 700;
+  font-size: 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--ant-border-2);
+}
+.mix-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mix-group {
+  border: 1px solid var(--ant-border);
+  border-radius: var(--ant-radius-sm);
+  padding: 12px 14px;
+  background: var(--ant-fill);
+}
+
+/* ---- PlayLog / mais tocadas (Story 7.5) ---- */
+.pl-rank {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pl-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: var(--ant-radius-sm);
+  transition: background 0.14s;
+}
+.pl-rank-row:nth-child(odd) {
+  background: var(--ant-fill);
+}
+.pl-rank-row:hover {
+  background: var(--ant-primary-bg);
+}
+.pl-rank-pos {
+  width: 26px;
+  text-align: right;
+  font-weight: 800;
+  color: var(--ant-primary);
+}
+.pl-rank-title {
+  flex: 1;
+  font-weight: 600;
+  color: var(--ant-text);
+}
+.pl-rank-artist {
+  font-weight: 500;
+  color: var(--ant-text-3);
+}
+.pl-rank-count {
+  font-weight: 700;
+  color: var(--ant-primary-active);
+  background: var(--ant-primary-bg);
+  border-radius: 10px;
+  padding: 1px 9px;
+  font-size: 12px;
+}
+.pl-hist {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.pl-hist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: var(--ant-radius-sm);
+  transition: background 0.14s;
+}
+.pl-hist-row:nth-child(odd) {
+  background: var(--ant-fill);
+}
+.pl-hist-row:hover {
+  background: var(--ant-primary-bg);
+}
+.pl-hist-time {
+  width: 48px;
+  color: var(--ant-text-3);
+  font-weight: 700;
+}
+.pl-hist-title {
+  flex: 1;
+  color: var(--txt);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pl-hist-artist {
+  color: var(--txt-2);
+  font-weight: 500;
+}
+.pl-hist-dur {
+  color: var(--txt-2);
+  font-weight: 700;
+}
+/* Popup Histórico & Mais Tocadas — MAIOR que os demais modais (retângulo quase
+   cheio), medidas em % do viewport p/ ficar responsivo. Só esta popup cresce; o
+   `.mix-modal` genérico segue compacto. Titlebar/footer fixos, corpo rola. */
+.mix-modal.pl-modal {
+  width: 92vw;
+  max-width: 1280px;
+  height: 90vh;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.mix-modal.pl-modal .mix-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+/* dentro da popup grande, o histórico usa o espaço disponível (não trava em 320px) */
+.mix-modal.pl-modal .pl-hist {
+  max-height: none;
+}
+/* ECAD report — obra/intérprete | execuções | tempo total */
+.ecad-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ecad-head,
+.ecad-row,
+.ecad-totals {
+  display: grid;
+  grid-template-columns: 1fr 64px 96px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+}
+.ecad-head {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--txt-2);
+  border-bottom: 1px solid #ccc;
+}
+.ecad-row {
+  border-bottom: 1px solid var(--bd);
+  font-size: 13px;
+}
+.ecad-title {
+  font-weight: 700;
+  color: var(--txt);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ecad-artist {
+  font-weight: 500;
+  color: var(--txt-3);
+}
+.ecad-plays {
+  text-align: right;
+  font-weight: 800;
+  color: var(--ac-green-tx);
+}
+.ecad-dur {
+  text-align: right;
+  color: var(--txt-2);
+}
+.ecad-totals {
+  margin-top: 6px;
+  border-top: 2px solid #999;
+  font-weight: 900;
+  color: var(--txt);
+}
+/* comprovante de irradiação — hora | obra/intérprete | fonte | duração */
+.proof-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.proof-head,
+.proof-row,
+.proof-totals {
+  display: grid;
+  grid-template-columns: 52px 1fr 72px 72px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+}
+.proof-head {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--txt-2);
+  border-bottom: 1px solid #ccc;
+}
+.proof-row {
+  border-bottom: 1px solid var(--bd);
+  font-size: 13px;
+}
+.proof-time {
+  color: var(--txt-2);
+}
+.proof-title {
+  font-weight: 700;
+  color: var(--txt);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.proof-artist {
+  font-weight: 500;
+  color: var(--txt-3);
+}
+.proof-src {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ac-blue-tx);
+}
+.proof-dur {
+  text-align: right;
+  color: var(--txt-2);
+}
+.proof-totals {
+  margin-top: 6px;
+  border-top: 2px solid #999;
+  font-weight: 900;
+  color: var(--txt);
+}
+/* pedidos & dedicatórias — form de entrada + fila de moderação */
+.req-input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--txt);
+}
+.req-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.req-row {
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  padding: 6px 8px;
+  background: var(--surface-2);
+}
+.req-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.req-song {
+  font-weight: 700;
+  color: var(--txt);
+}
+.req-listener {
+  color: var(--txt-3);
+  font-size: 12px;
+}
+.req-dedication {
+  margin-top: 3px;
+  font-style: italic;
+  color: var(--txt-2);
+  font-size: 12px;
+}
+.req-actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+}
+.req-badge {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #fff;
+}
+.req-pending {
+  background: #b8860b;
+}
+.req-approved {
+  background: #1f6b2f;
+}
+.req-rejected {
+  background: #8b2b2b;
+}
+.req-played {
+  background: #1f4d6b;
+}
+.mix-group legend {
+  font-weight: 800;
+  color: var(--txt);
+  padding: 0 6px;
+  font-size: 13px;
+}
+.mix-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mix-lbl {
+  font-weight: 700;
+  color: var(--ac-danger-tx);
+  font-size: 13px;
+}
+.mix-num {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid #9098ae;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--ac-blue-tx);
+}
+.mix-sid {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid #9098ae;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.04);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--ac-blue-tx);
+  overflow-wrap: anywhere;
+  cursor: copy;
+  user-select: all;
+}
+.mix-num.sm {
+  width: 48px;
+}
+/* Ant-style native select — auto width fits the label, room for the caret so
+   text never clips. Used for text-valued dropdowns (theme/density/monitors). */
+.mix-select {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  width: auto;
+  max-width: 100%;
+  height: 32px;
+  padding: 4px 30px 4px 11px;
+  border: 1px solid var(--ant-border, #d9d9d9);
+  border-radius: var(--ant-radius-sm, 6px);
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8.5 1.5 4h9z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ant-text, #1f1f1f);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.mix-select:hover {
+  border-color: var(--ant-primary, #1677ff);
+}
+.mix-select:focus {
+  outline: none;
+  border-color: var(--ant-primary, #1677ff);
+  box-shadow: var(--ant-focus, 0 0 0 2px rgba(22, 119, 255, 0.15));
+}
+.mix-graph {
+  flex: 1;
+  height: 40px;
+  background: var(--surface);
+  border: 1px solid #b9b9b9;
+}
+.mix-in {
+  stroke: #8a2b2b;
+  stroke-width: 2;
+}
+.mix-out {
+  stroke: #1554b0;
+  stroke-width: 2;
+}
+.mix-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--txt);
+}
+.mix-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--txt);
+}
+.mix-checks label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mix-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--ant-border-2);
+}
+.mix-save,
+.mix-close {
+  padding: 7px 20px;
+  border-radius: var(--ant-radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.mix-close {
+  border: 1px solid var(--ant-border);
+  background: var(--surface);
+  color: var(--ant-text-2);
+}
+.mix-close:hover {
+  border-color: var(--ant-primary);
+  color: var(--ant-primary);
+}
+.mix-save {
+  border: 1px solid var(--ant-primary);
+  background: var(--ant-primary);
+  color: #fff;
+  box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
+}
+.mix-save:hover:not(:disabled) {
+  background: var(--ant-primary-hover);
+  border-color: var(--ant-primary-hover);
+}
+.mix-save:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.mix-err {
+  align-self: center;
+  color: var(--ac-danger-tx);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---- Detalhes da faixa (TrackDetailModal) — capa ampliada + metadata ---- */
+.mix-modal.td-modal {
+  width: 460px;
+}
+.td-body {
+  display: flex;
+  gap: 16px;
+  padding: 18px;
+  align-items: center;
+  border-bottom: 1px solid var(--ant-border-2);
+}
+.td-cover {
+  flex: 0 0 auto;
+  line-height: 0;
+}
+/* capa grande no popup (usa size="deck" = 60px) esticada p/ destaque */
+.td-cover .track-cover {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--ant-radius-sm);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+.td-head {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.td-title {
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--ant-text);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.td-artist {
+  color: var(--ant-text-3);
+  font-weight: 500;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.td-badge {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 10px;
+  background: var(--ant-fill);
+  color: var(--ant-text-2);
+  border: 1px solid var(--ant-border);
+}
+.td-badge-spot {
+  background: rgba(29, 185, 84, 0.16);
+  color: #1db954;
+  border-color: rgba(29, 185, 84, 0.4);
+}
+.td-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+}
+.td-tbl tr:nth-child(odd) {
+  background: var(--ant-fill);
+}
+.td-k {
+  padding: 7px 18px;
+  color: var(--ant-text-3);
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  width: 42%;
+}
+.td-v {
+  padding: 7px 18px;
+  color: var(--ant-text);
+  font-weight: 600;
+  font-size: 13px;
+  word-break: break-word;
+}
+.td-open {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---- Changelog (ChangelogModal) — aberto ao clicar na versão ---- */
+.mix-modal.cl-modal {
+  width: 560px;
+  max-width: 94vw;
+}
+.cl-titlebar,
+.cl-modal .mix-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cl-mark {
+  color: #a8d4ff;
+  text-shadow: 0 0 8px rgba(168, 212, 255, 0.55);
+}
+.cl-cur {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--ant-text-2);
+  background: var(--ant-fill);
+  border: 1px solid var(--ant-border-2);
+}
+.cl-body {
+  max-height: 62vh;
+  overflow-y: auto;
+  padding: 6px 18px 4px;
+}
+.cl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cl-item {
+  position: relative;
+  padding: 12px 0 12px 22px;
+  border-bottom: 1px solid var(--ant-border-2);
+}
+.cl-item:last-child {
+  border-bottom: none;
+}
+/* linha do tempo à esquerda */
+.cl-item::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 20px;
+  bottom: -12px;
+  width: 2px;
+  background: var(--ant-border-2);
+}
+.cl-item:last-child::before {
+  display: none;
+}
+.cl-dot {
+  position: absolute;
+  left: 0;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--ant-border-2);
+  z-index: 1;
+}
+.cl-item.on .cl-dot {
+  background: var(--ant-primary);
+  border-color: var(--ant-primary);
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.18);
+}
+.cl-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cl-ver {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ant-primary);
+  font-variant-numeric: tabular-nums;
+}
+.cl-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ant-text);
+}
+.cl-date {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ant-text-3);
+  font-variant-numeric: tabular-nums;
+}
+.cl-hl {
+  margin: 6px 0 0;
+  padding-left: 16px;
+}
+.cl-hl li {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ant-text-2);
+  margin: 2px 0;
+}
+.cl-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cl-author {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ant-primary);
+  text-decoration: none;
+}
+.cl-author:hover {
+  text-decoration: underline;
+}
+
+/* ---- clocks / hour templates modal (Story 4.1) ---- */
+.mix-num.wide {
+  width: 100%;
+  text-align: left;
+  color: var(--txt);
+}
+.mix-modal:has(.clocks-body) {
+  width: 720px;
+}
+.clocks-body {
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 260px;
+}
+.clocks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 180px;
+  border-right: 1px solid #cfcfcf;
+  padding-right: 10px;
+  overflow-y: auto;
+}
+.clocks-item {
+  text-align: left;
+  padding: 6px 10px;
+  border: 1px solid #c9c9c9;
+  border-radius: 4px;
+  background: linear-gradient(#fff, #eee);
+  font-weight: 700;
+  color: var(--txt);
+  cursor: pointer;
+}
+.clocks-item:hover {
+  background: var(--surface-2);
+}
+.clocks-item.active {
+  background: linear-gradient(#b39fd0, #9c86bd);
+  color: var(--ac-purple-tx);
+  border-color: #7b5ea8;
+}
+.clocks-item.new {
+  color: var(--ac-blue-tx);
+  border-style: dashed;
+}
+/* Eventos agendados (Story 4.4): dias da semana toggláveis + dica de prioridade */
+.ev-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ev-day {
+  min-width: 40px;
+  padding: 5px 8px;
+  border: 1px solid #c9c9c9;
+  border-radius: 4px;
+  background: linear-gradient(#fff, #eee);
+  font-weight: 700;
+  color: var(--txt-2);
+  cursor: pointer;
+}
+.ev-day:hover {
+  background: var(--surface-2);
+}
+.ev-day.active {
+  background: linear-gradient(#b39fd0, #9c86bd);
+  color: var(--ac-purple-tx);
+  border-color: #7b5ea8;
+}
+.mix-hint {
+  font-size: 11px;
+  color: var(--txt-3);
+  font-style: italic;
+}
+/* Bloco "Áudio das faixas locais" do ⚙ Configurações. `.mix-row` como <label>
+   deixa a linha inteira clicável — alvo grande importa num painel operado ao
+   vivo. O interruptor vai pra DIREITA (margin-left auto) pra que a coluna de
+   caixas fique alinhada mesmo com rótulos de larguras diferentes. */
+.mix-check {
+  margin-left: auto;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ac-blue-tx);
+  cursor: pointer;
+}
+.mix-row:has(> .mix-check) {
+  cursor: pointer;
+}
+.mix-range {
+  flex: 1;
+  min-width: 80px;
+  accent-color: var(--ac-blue-tx);
+  cursor: pointer;
+}
+.mix-note {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--txt-3);
+  font-style: italic;
+}
+.clocks-edit {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.clocks-edit .mix-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.clocks-empty {
+  color: var(--txt-3);
+  font-style: italic;
+  margin: auto;
+}
+
+/* ---- Prever hora (Story 4.3): preview read-only da geração por rotação ---- */
+.mix-modal.preview-modal {
+  width: 560px;
+  max-width: 92vw;
+}
+.preview-body {
+  flex-direction: column;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.preview-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+.preview-item {
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+.preview-item:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.03);
+}
+.preview-idx {
+  color: var(--txt-3);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.preview-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.preview-artist {
+  color: #aaa;
+}
+.preview-cat {
+  color: #6aa9ff;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.preview-bpm {
+  color: #7fd67f;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+}
+
+/* ---- Grade Semanal (Story 4.2): matriz 7×24 ---- */
+.mix-modal:has(.grade-body) {
+  width: 980px;
+  max-width: 96vw;
+}
+.grade-body {
+  flex-direction: column;
+  gap: 10px;
+}
+.grade-palette {
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.grade-hint {
+  color: var(--txt-3);
+  font-size: 11px;
+}
+.grade-scroll {
+  overflow: auto;
+  max-height: 60vh;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+}
+.grade-table {
+  border-collapse: collapse;
+  font-size: 10px;
+  width: 100%;
+}
+.grade-table th,
+.grade-table td {
+  border: 1px solid #232323;
+  text-align: center;
+}
+.grade-hour {
+  width: 30px;
+  min-width: 30px;
+  color: var(--txt-3);
+  font-weight: 400;
+  padding: 3px 0;
+  position: sticky;
+  top: 0;
+  background: #1a1a1a;
+  z-index: 1;
+}
+.grade-corner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: #1a1a1a;
+  z-index: 2;
+}
+.grade-day {
+  color: #ccc;
+  padding: 0 8px;
+  cursor: pointer;
+  position: sticky;
+  left: 0;
+  background: #1a1a1a;
+  white-space: nowrap;
+  user-select: none;
+}
+.grade-day:hover {
+  background: #262636;
+}
+.grade-cell {
+  height: 22px;
+  cursor: pointer;
+  color: #ddd;
+  background: #141414;
+  transition: filter 0.1s;
+}
+.grade-cell:hover {
+  filter: brightness(1.4);
+  outline: 1px solid #6c6cff;
+}
+.grade-cell.on {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ---- modais de biblioteca: Adicionar / Editar mídia ---- */
+.lib-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ant-mask);
+  animation: ant-mask-in 0.24s ease-out;
+}
+.lib-modal {
+  width: 460px;
+  max-width: 94vw;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--ant-radius);
+  box-shadow: var(--ant-shadow);
+  animation: ant-zoom-in 0.24s var(--ant-ease);
+}
+.lib-titlebar {
+  padding: 14px 18px;
+  background: var(--surface);
+  color: var(--ant-text);
+  font-weight: 700;
+  font-size: 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--ant-border-2);
+}
+.lib-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lib-drop {
+  border: 1px dashed var(--ant-border);
+  border-radius: var(--ant-radius-sm);
+  background: var(--ant-fill);
+  padding: 22px 12px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ant-text-2);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.lib-drop:hover {
+  border-color: var(--ant-primary);
+  color: var(--ant-primary);
+}
+.lib-drop.over {
+  border-color: var(--ant-primary);
+  background: var(--ant-primary-bg);
+}
+.lib-drop.has {
+  border-style: solid;
+  border-color: var(--ant-success);
+  background: var(--ac-green-bg);
+  color: var(--ac-green-tx);
+}
+.lib-drop-file {
+  font-weight: 800;
+  font-size: 13px;
+}
+.lib-drop-hint {
+  font-size: 13px;
+  color: var(--ant-text-3);
+}
+.lib-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lib-field > span {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ant-text-2);
+}
+.lib-field input,
+.lib-field select {
+  padding: 7px 11px;
+  border: 1px solid var(--ant-border);
+  border-radius: var(--ant-radius-sm);
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--ant-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.lib-field input:focus,
+.lib-field select:focus {
+  outline: none;
+  border-color: var(--ant-primary);
+  box-shadow: var(--ant-focus);
+}
+.lib-err {
+  padding: 8px 12px;
+  border: 1px solid #ffccc7;
+  border-radius: var(--ant-radius-sm);
+  background: var(--ac-danger-bg);
+  color: var(--ac-danger-tx);
+  font-size: 12px;
+  font-weight: 600;
+}
+.lib-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--ant-border-2);
+}
+.lib-save,
+.lib-close {
+  padding: 7px 20px;
+  border-radius: var(--ant-radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.lib-close {
+  border: 1px solid var(--ant-border);
+  background: var(--surface);
+  color: var(--ant-text-2);
+}
+.lib-close:hover {
+  border-color: var(--ant-primary);
+  color: var(--ant-primary);
+}
+.lib-save {
+  border: 1px solid var(--ant-primary);
+  background: var(--ant-primary);
+  color: #fff;
+  box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
+}
+.lib-save:hover:not(:disabled) {
+  background: var(--ant-primary-hover);
+  border-color: var(--ant-primary-hover);
+}
+.lib-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ DJ deck interativo (Story 5.1) ============ */
+.djpair {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  overflow-y: auto;
+}
+.djpair-decks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.djpair-hint {
+  color: rgba(238, 244, 251, 0.6);
+  font-size: 12px;
+  text-align: center;
+}
+.djdeck {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(12, 18, 28, 0.6);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.djdeck-a {
+  box-shadow: inset 3px 0 0 #35d07f;
+}
+.djdeck-b {
+  box-shadow: inset 3px 0 0 #38bdf8;
+}
+.djdeck.live {
+  background: rgba(20, 32, 26, 0.7);
+}
+.djdeck-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.djdeck-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 13px;
+  color: #061019;
+  background: #cfe6ff;
+}
+.djdeck-a .djdeck-badge {
+  background: #9af5c4;
+}
+.djdeck-pick {
+  flex: 1;
+  min-width: 0;
+  background: #0c1420;
+  color: #eef4fb;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+.djdeck-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #eef4fb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 18px;
+}
+.djdeck-empty {
+  color: rgba(238, 244, 251, 0.45);
+  font-weight: 400;
+}
+.djdeck-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+.djdeck-wave {
+  position: relative;
+  height: 40px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.djdeck-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(53, 208, 127, 0.28), rgba(53, 208, 127, 0.5));
+}
+.djdeck-b .djdeck-fill {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.28), rgba(56, 189, 248, 0.5));
+}
+.djdeck-head {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--surface);
+}
+.djdeck-times {
+  display: flex;
+  justify-content: space-between;
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(238, 244, 251, 0.8);
+}
+.djdeck-transport {
+  display: flex;
+  gap: 6px;
+}
+.djdeck-transport button {
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #eef4fb;
+  font-size: 14px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.djdeck-transport button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+.djdeck-transport button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.djdeck-err {
+  font-size: 11px;
+  color: #ff8f8f;
+}
+.xfader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+}
+.xfader-tag {
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(238, 244, 251, 0.7);
+}
+.xfader-slider {
+  flex: 1;
+  accent-color: #38bdf8;
+}
+
+/* hot cues + cue bar (Story 5.2) */
+.hotcues {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  padding: 4px 0;
+}
+.hotcue {
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgba(238, 244, 251, 0.18);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(238, 244, 251, 0.55);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+.hotcue:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, 0.6);
+}
+.hotcue.set {
+  background: linear-gradient(180deg, #f59e0b, #d97706);
+  border-color: #f59e0b;
+  color: #1a1200;
+}
+.hotcue:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.cuebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+.cue-toggle {
+  padding: 3px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.08);
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.cue-toggle.on {
+  background: #38bdf8;
+  color: #06202e;
+  border-color: #38bdf8;
+}
+.cue-toggle:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.cue-device {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 6px;
+  border: 1px solid rgba(238, 244, 251, 0.18);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(238, 244, 251, 0.85);
+  font-size: 11px;
+}
+.djdeck-wave {
+  cursor: pointer;
+}
+
+/* EQ3 + pitch fader + SYNC (Story 5.3) */
+.djdeck-mix {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  padding: 4px 0;
+}
+.eq3 {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+.eq3-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.eq3-fader {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  height: 60px;
+  accent-color: #38bdf8;
+}
+.eq3-kill {
+  padding: 2px 6px;
+  border: 1px solid rgba(238, 244, 251, 0.2);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(238, 244, 251, 0.7);
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.eq3-kill.on {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+.eq3-kill:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.pitch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
+.pitch-fader {
+  width: 100%;
+  accent-color: #f59e0b;
+}
+.pitch-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 10px;
+  color: rgba(238, 244, 251, 0.7);
+}
+.pitch-pct {
+  font-variant-numeric: tabular-nums;
+}
+.pitch-bpm {
+  font-weight: 800;
+  color: #fbbf24;
+  font-variant-numeric: tabular-nums;
+}
+.pitch-sync {
+  width: 100%;
+  padding: 3px 0;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.1);
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.pitch-sync:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ---- AI DJ falado (AIDJPanel, Story 6.4) ---- */
+.aidj {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid #c3c7d6;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+}
+.aidj-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.aidj-logo {
+  font-weight: 800;
+  color: #7c3aed;
+  font-size: 15px;
+}
+.aidj-switch {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ac-purple-tx);
+  cursor: pointer;
+}
+.aidj-conn.off {
+  margin-left: auto;
+  color: var(--txt-3);
+  font-size: 12px;
+}
+.aidj-warn {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ac-purple-tx);
+  background: var(--ac-purple-bg);
+  border: 1px solid #d3bff0;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.aidj-warn.aidj-ok {
+  color: var(--ac-green-tx);
+  background: var(--ac-green-bg);
+  border-color: #a6e0be;
+}
+.aidj-warn.aidj-err {
+  color: var(--ac-danger-tx);
+  background: var(--ac-danger-bg);
+  border-color: #f0b3b3;
+}
+.aidj-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.aidj-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ac-purple-tx);
+}
+.aidj-voice-sel {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 12px;
+}
+.aidj-voice-sel:disabled {
+  background: var(--surface-2);
+}
+.aidj-btn {
+  padding: 7px 16px;
+  border: 1px solid #7c3aed;
+  border-radius: 5px;
+  background: #7c3aed;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+.aidj-btn:hover:not(:disabled) {
+  background: #8b4ff5;
+}
+.aidj-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.aidj-next {
+  font-size: 12px;
+  color: var(--txt-2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Auth / RBAC (Story 7.3) ---- */
+.app-boot {
+  width: 100vw;
+  height: 100vh;
+  background: #0c0e14;
+}
+/* aviso de servidor em modo multiusuário (o formulário de login foi removido na
+   0.2.26 — ver ServerLoginRequired.tsx). Reusa o fundo do boot pra não piscar. */
+.srv-login {
+  display: grid;
+  place-items: center;
+  color: #e5e7eb;
+}
+.srv-login-card {
+  max-width: 460px;
+  padding: 26px 30px;
+  border: 1px solid #26303f;
+  border-radius: 14px;
+  background: #121722;
+  text-align: center;
+  line-height: 1.5;
+}
+.srv-login-card h1 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+.srv-login-card p {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+}
+.srv-login-hint {
+  color: #94a3b8;
+  font-size: 12.5px;
+}
+.srv-login-hint code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: #1b2333;
+}
+/* account actions — pushed to the right of the dark titlebar. */
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-style: normal;
+}
+/* account buttons match the AUTO OFF chip styling for a consistent titlebar. */
+.user-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.18);
+  color: #dbe7f3;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.user-btn:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.user-table th {
+  text-align: left;
+  color: var(--txt-2);
+  font-weight: 500;
+  padding: 4px 6px;
+  border-bottom: 1px solid #262c3b;
+}
+.user-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid #171b26;
+  vertical-align: middle;
+}
+
+/* ===== Operator profile: layout, theme & density (Story 7.4) ===== */
+
+/* a display:contents wrapper so tagging a panel with data-panel doesn't add a box
+   to the layout; useApplyProfile flips display:none to hide it. */
+.panel-slot {
+  display: contents;
+}
+
+/* theme: the shipped cream palette IS the "claro" look; "escuro" (the default)
+   and auto-in-dark swap the semantic tokens to a slate palette. App surfaces now
+   read the --surface/--txt/--bd/--ac-* tokens (light values pinned to the original
+   literals), so remapping them here yields a real dark mode. --ant-* modal tokens
+   are remapped too so dialogs follow the theme. */
+:root[data-theme="escuro"] {
+  --cream: #232b36;
+  --cream-2: #1b222c;
+  --line: #3a475a;
+  --purple: #2a3444;
+  --purple-2: #222c3a;
+  --green-played: #38516f;
+  --ink: #e7ecf2;
+
+  --surface: #1b222c;
+  --surface-2: #232b36;
+  --surface-3: #2a3444;
+  --txt: #e7ecf2;
+  --txt-2: #aeb9c8;
+  --txt-3: #7f8b9c;
+  --bd: #3a475a;
+  --bd-2: #2f3a49;
+  --ac-green-bg: #16351f;   --ac-green-tx: #6ee7a0;
+  --ac-warn-bg: #3a2e12;    --ac-warn-tx: #f0c987;
+  --ac-danger-bg: #3a1a1a;  --ac-danger-tx: #ff8f8f;
+  --ac-purple-bg: #2a2440;  --ac-purple-tx: #c3b0f2;
+  --ac-blue-bg: #16273e;    --ac-blue-tx: #8fb8ff;
+
+  --ant-text: #e7ecf2;
+  --ant-text-2: #aeb9c8;
+  --ant-text-3: #7f8b9c;
+  --ant-border: #3a475a;
+  --ant-border-2: #2f3a49;
+  --ant-fill: #232b36;
+  --ant-primary-bg: #16273e;
+  --ant-mask: rgba(0, 0, 0, 0.6);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --cream: #232b36;
+    --cream-2: #1b222c;
+    --line: #3a475a;
+    --purple: #2a3444;
+    --purple-2: #222c3a;
+    --green-played: #38516f;
+    --ink: #e7ecf2;
+
+    --surface: #1b222c;
+    --surface-2: #232b36;
+    --surface-3: #2a3444;
+    --txt: #e7ecf2;
+    --txt-2: #aeb9c8;
+    --txt-3: #7f8b9c;
+    --bd: #3a475a;
+    --bd-2: #2f3a49;
+    --ac-green-bg: #16351f;   --ac-green-tx: #6ee7a0;
+    --ac-warn-bg: #3a2e12;    --ac-warn-tx: #f0c987;
+    --ac-danger-bg: #3a1a1a;  --ac-danger-tx: #ff8f8f;
+    --ac-purple-bg: #2a2440;  --ac-purple-tx: #c3b0f2;
+    --ac-blue-bg: #16273e;    --ac-blue-tx: #8fb8ff;
+
+    --ant-text: #e7ecf2;
+    --ant-text-2: #aeb9c8;
+    --ant-text-3: #7f8b9c;
+    --ant-border: #3a475a;
+    --ant-border-2: #2f3a49;
+    --ant-fill: #232b36;
+    --ant-primary-bg: #16273e;
+    --ant-mask: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* density: "compacto" tightens the reading size of the two working columns. */
+:root[data-density="compacto"] .op,
+:root[data-density="compacto"] .rightpanel {
+  font-size: 12px;
+}
+
+/* ...e aperta os paddings/alturas: mais itens visíveis, menos respiro vertical. */
+:root[data-density="compacto"] .opscreen-head {
+  gap: 4px;
+  padding: 3px 6px;
+}
+:root[data-density="compacto"] .opscreen-mix,
+:root[data-density="compacto"] .opscreen-add {
+  padding: 3px 7px;
+}
+:root[data-density="compacto"] .opcat {
+  gap: 4px;
+  padding: 4px 8px;
+}
+:root[data-density="compacto"] .opsearch {
+  height: 34px;
+  gap: 8px;
+  padding: 0 6px 0 12px;
+}
+:root[data-density="compacto"] .opmedia-row td {
+  padding: 2px 6px;
+}
+:root[data-density="compacto"] .rightpanel-head {
+  padding: 3px 6px;
+}
+:root[data-density="compacto"] .rp-mode {
+  padding: 3px 8px;
+}
+
+/* --- layout editor rows --- */
+.layout-panels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.layout-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--ant-border, #d9d9d9);
+  border-radius: var(--ant-radius-sm, 6px);
+  cursor: grab;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.layout-panel:hover {
+  border-color: var(--ant-primary, #1677ff);
+}
+.layout-panel.dragging {
+  opacity: 0.55;
+  border-color: var(--ant-primary, #1677ff);
+  box-shadow: var(--ant-focus, 0 0 0 2px rgba(22, 119, 255, 0.15));
+}
+.layout-grip {
+  color: var(--ant-text-3, #bfbfbf);
+  cursor: grab;
+  user-select: none;
+}
+.layout-name {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ant-text, #1f1f1f);
+}
+.layout-move {
+  display: flex;
+  gap: 4px;
+}
+
+/* ---- Site público (Story 8.4) ---- */
+.pub-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.pub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  padding: 5px 8px;
+  background: var(--surface-2);
+}
+.pub-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pub-title {
+  font-weight: 700;
+  color: var(--txt);
+}
+.pub-artist {
+  color: var(--txt-3);
+  font-size: 12px;
+}
+.pub-time {
+  color: var(--ac-blue-tx);
+  font-size: 12px;
+  min-width: 44px;
+}
+.pub-badge {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #fff;
+  background: #555;
+  margin-left: auto;
+}
+.pub-src-local {
+  background: #1f6b2f;
+}
+.pub-src-spotify {
+  background: #1db954;
+}
+.pub-src-tts {
+  background: #6b3f9e;
+}
+.pub-src-line_in {
+  background: #1f4d6b;
+}
+.pub-src-whatsapp {
+  background: #25543a;
+}
+.pub-src-x {
+  background: #333;
+}
+.pub-src-facebook {
+  background: #1f3a6b;
+}
+.pub-daily {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 6px;
+}
+.pub-fact {
+  font-size: 13px;
+  color: var(--txt-2);
+}
+.pub-fact b {
+  color: var(--ac-danger-tx);
+  margin-right: 6px;
+}
+
+/* --- social panel (Story 8.5) --- */
+.soc-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px 0;
+}
+.soc-chk {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.soc-select {
+  background: #0d0d12;
+  color: #e8e8ef;
+  border: 1px solid #2b2b38;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+.soc-text {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  background: #0d0d12;
+  color: #e8e8ef;
+  border: 1px solid #2b2b38;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 13px;
+  font-family: inherit;
+}
+.soc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.soc-receipt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.soc-url {
+  flex: 1;
+  color: var(--txt-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Escala de trabalho (Story 9.1): roster de locutores ---- */
+.staff-onair {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #1a1a1a;
+}
+.staff-input,
+.staff-select,
+.staff-time {
+  border: 1px solid #b9b9b9;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 13px;
+  background: var(--surface);
+  color: #1a1a1a;
+}
+.staff-input {
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+.staff-day {
+  margin-top: 8px;
+}
+.staff-dayname {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--txt-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.staff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.staff-shift {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--surface-2);
+}
+.staff-shift.staff-live {
+  background: var(--ac-danger-bg);
+  box-shadow: inset 0 0 0 1px #e88;
+}
+.staff-slot {
+  color: var(--txt-2);
+  font-size: 12px;
+  min-width: 92px;
+}
+.staff-who {
+  flex: 1 1 auto;
+  font-size: 13px;
+  color: #1a1a1a;
+}
+.staff-rm {
+  border: none;
+  background: transparent;
+  color: #a33;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  padding: 2px 4px;
+}
+.staff-rm:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ============================================================
+   Story 9.2 — modo toque + segundo monitor (mural)
+   ============================================================ */
+
+/* per-panel monitor picker inside the layout editor (only shown w/ 2 monitors). */
+.layout-screen {
+  flex: 0 0 auto;
+  min-width: 58px;
+}
+
+/* Touch mode: [data-touch="on"] on <html> enlarges hit targets across the console
+   so fingers land cleanly on a touchscreen. Pure CSS, no server state. */
+:root[data-touch="on"] button,
+:root[data-touch="on"] .user-btn,
+:root[data-touch="on"] select,
+:root[data-touch="on"] .tab {
+  min-height: 44px;
+}
+:root[data-touch="on"] .queue-row,
+:root[data-touch="on"] .lib-row,
+:root[data-touch="on"] .cart-btn {
+  min-height: 48px;
+}
+:root[data-touch="on"] .user-btn,
+:root[data-touch="on"] .tab {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+/* ---- SecondScreen wallboard (?monitor=2) ----
+   Full-viewport, dark, big type, read-only. Its own window, so no grid coupling. */
+.second-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #0b0e14;
+  color: #e7ecf2;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+.second-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 28px;
+  background: #10141d;
+  border-bottom: 1px solid #1c2432;
+}
+.second-brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ff8a3d;
+  font-size: 18px;
+}
+.second-live {
+  font-size: 13px;
+  color: var(--txt-3);
+  letter-spacing: 0.08em;
+}
+.second-live.on {
+  color: #35d07f;
+}
+.second-clock {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+  font-weight: 600;
+}
+.second-now {
+  flex: 0 0 auto;
+  padding: 6vh 5vw 4vh;
+  text-align: center;
+}
+.second-now-tag {
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  color: #ff8a3d;
+  margin-bottom: 18px;
+}
+.second-now-title {
+  font-size: clamp(40px, 7vw, 96px);
+  font-weight: 800;
+  line-height: 1.05;
+  word-break: break-word;
+}
+.second-now-src {
+  margin-top: 18px;
+  font-size: 20px;
+  color: var(--txt-3);
+}
+.second-queue {
+  flex: 1 1 auto;
+  padding: 0 5vw 4vh;
+  overflow-y: auto;
+}
+.second-queue-tag {
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  color: var(--txt-3);
+  margin-bottom: 12px;
+}
+.second-queue-empty {
+  color: var(--txt-3);
+  font-size: 22px;
+}
+.second-queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.second-queue-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 16px;
+  background: #131824;
+  border-radius: 8px;
+  font-size: clamp(18px, 2.4vw, 30px);
+}
+.second-queue-pos {
+  flex: 0 0 auto;
+  width: 42px;
+  color: #ff8a3d;
+  font-weight: 700;
+  text-align: right;
+}
+.second-queue-title {
+  flex: 1 1 auto;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.second-queue-src {
+  flex: 0 0 auto;
+  color: var(--txt-3);
+  font-size: 0.7em;
+}
+
+/* ============================================================
+   Ant Design redesign — shared polish over light surfaces
+   Focus rings, control feel and tags aligned to antd tokens.
+   ============================================================ */
+.spot-input,
+.req-input,
+.staff-input,
+.staff-select,
+.soc-select,
+.mk-select,
+.mix-body input,
+.mix-body select,
+.mix-body textarea {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.spot-input:focus,
+.req-input:focus,
+.staff-input:focus,
+.staff-select:focus,
+.soc-select:focus,
+.mk-select:focus,
+.mix-body input:focus,
+.mix-body select:focus,
+.mix-body textarea:focus {
+  outline: none;
+  border-color: var(--ant-primary);
+  box-shadow: var(--ant-focus);
+}
+
+/* Ant-flavored pill tags reused across now-playing / decks / second screen */
+.np-next-tag,
+.djdeck-tag,
+.second-now-tag,
+.second-queue-tag {
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+}
+
+/* ===== Scrollbars finas (estilo Ant) — superfícies claras ===== */
+.opmedia-scroll,
+.pl-hist,
+.mix-body,
+.lib-body,
+.mk-body,
+.loc-body,
+.opscreen,
+.panel-slot,
+.spot-results,
+.cfm-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+}
+.opmedia-scroll::-webkit-scrollbar,
+.pl-hist::-webkit-scrollbar,
+.mix-body::-webkit-scrollbar,
+.lib-body::-webkit-scrollbar,
+.mk-body::-webkit-scrollbar,
+.loc-body::-webkit-scrollbar,
+.opscreen::-webkit-scrollbar,
+.panel-slot::-webkit-scrollbar,
+.spot-results::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.opmedia-scroll::-webkit-scrollbar-thumb,
+.pl-hist::-webkit-scrollbar-thumb,
+.mix-body::-webkit-scrollbar-thumb,
+.lib-body::-webkit-scrollbar-thumb,
+.mk-body::-webkit-scrollbar-thumb,
+.loc-body::-webkit-scrollbar-thumb,
+.opscreen::-webkit-scrollbar-thumb,
+.panel-slot::-webkit-scrollbar-thumb,
+.spot-results::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.opmedia-scroll::-webkit-scrollbar-thumb:hover,
+.pl-hist::-webkit-scrollbar-thumb:hover,
+.mix-body::-webkit-scrollbar-thumb:hover,
+.lib-body::-webkit-scrollbar-thumb:hover,
+.mk-body::-webkit-scrollbar-thumb:hover,
+.loc-body::-webkit-scrollbar-thumb:hover,
+.opscreen::-webkit-scrollbar-thumb:hover,
+.panel-slot::-webkit-scrollbar-thumb:hover,
+.spot-results::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.32);
+  background-clip: content-box;
+}
+.opmedia-scroll::-webkit-scrollbar-track,
+.pl-hist::-webkit-scrollbar-track,
+.mix-body::-webkit-scrollbar-track,
+.lib-body::-webkit-scrollbar-track,
+.mk-body::-webkit-scrollbar-track,
+.loc-body::-webkit-scrollbar-track,
+.opscreen::-webkit-scrollbar-track,
+.panel-slot::-webkit-scrollbar-track,
+.spot-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===== Empty states unificados (estilo Ant Empty) ===== */
+.spot-empty,
+.clocks-empty,
+.cw-empty,
+.djdeck-empty,
+.second-queue-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 16px;
+  color: var(--ant-text-3);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+}
+.spot-empty::before,
+.clocks-empty::before,
+.cw-empty::before,
+.djdeck-empty::before {
+  content: "📭";
+  font-size: 30px;
+  opacity: 0.55;
+  filter: grayscale(0.4);
+}
+
+/* ===== Toast (Ant message) — pilha topo-centro ===== */
+/* Âncora dos toasts: rodapé da coluna esquerda, colado ACIMA do transporte.
+   `.transport-wrap` é só o referencial; `bottom: 100%` põe a pilha exatamente em
+   cima dele. Sobrepõe o conteúdo em vez de empurrar — empurrar encolheria a fila a
+   cada mensagem, e layout pulando durante operação ao vivo é pior que a mensagem.
+   Mais recente embaixo (column-reverse): fica perto do olho, que está no transporte. */
+.transport-wrap {
+  position: relative;
+}
+.toast-host {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  padding: 0 6px 6px;
+  pointer-events: none;
+}
+/* Alert do antd ocupando a barra inteira. `pointer-events: auto` só aqui — a pilha
+   é transparente ao clique pra nunca roubar o transporte, que é o controle crítico.
+   Peso visual acima do padrão do antd de propósito: o operador está olhando o deck e
+   a fila, não o rodapé — mensagem discreta aqui simplesmente não é vista. */
+.toast-alert.toast-alert {
+  pointer-events: auto;
+  justify-content: center; /* ícone + texto centralizados na barra */
+  position: relative;
+  border-radius: var(--ant-radius);
+  border-width: 2px;
+  box-shadow: 0 6px 20px rgba(15, 25, 40, 0.28);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 44px; /* respiro lateral pro X não encostar no texto */
+  animation: toast-in 0.22s var(--ant-ease);
+}
+/* ATENÇÃO ao nome das classes: no antd **v6** o wrapper é `.ant-alert-section` e o
+   texto é `.ant-alert-title` (na v5 eram `.ant-alert-content` / `.ant-alert-message`).
+   Mirar nas classes da v5 não dá erro nenhum — só não centraliza, e o CSS morto passa
+   despercebido. Confirmado no DOM: section vem com `flex: 1 1 0%` e estica, jogando o
+   texto pra esquerda; `flex: 0 1 auto` encolhe pro tamanho do texto e aí o
+   `justify-content: center` do pai finalmente centraliza. */
+.toast-alert.toast-alert .ant-alert-section {
+  flex: 0 1 auto;
+  min-width: 0; /* sem isso o ellipsis não corta dentro de flex */
+}
+/* UMA linha sempre: a barra fica colada no transporte e crescer pra duas empurra a
+   altura do rodapé no meio da operação. Mensagem que não couber é cortada com
+   reticências e o texto inteiro fica no `title` (hover) — as mensagens do app são
+   curtas de propósito, isto é só a rede de segurança. */
+.toast-alert.toast-alert .ant-alert-title {
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toast-alert.toast-alert .ant-alert-icon {
+  font-size: 17px;
+  margin-inline-end: 10px;
+  color: #fff;
+}
+/* Fundo SÓLIDO + texto branco, em vez do Alert claro padrão do antd (fundo pastel,
+   texto escuro). Motivo: a barra fica no rodapé, longe de onde o olho está durante a
+   operação; contraste alto é o que faz ela ser vista sem o operador procurar. Cores da
+   paleta do antd, então continua sendo a mesma linguagem visual. */
+.toast-alert.toast-alert .ant-alert-title,
+.toast-alert.toast-alert .ant-alert-close-icon,
+.toast-alert.toast-alert .ant-alert-close-icon .anticon {
+  color: #fff;
+}
+.toast-alert.ant-alert-error {
+  background: #d9363e;
+  border-color: #ff4d4f;
+}
+.toast-alert.ant-alert-success {
+  background: #389e0d;
+  border-color: #52c41a;
+}
+.toast-alert.ant-alert-warning {
+  background: #d48806;
+  border-color: #faad14;
+}
+.toast-alert.ant-alert-info {
+  background: #0958d9;
+  border-color: #1677ff;
+}
+/* o X sai do fluxo, senão entra na conta da centralização e desloca o texto. */
+.toast-alert.toast-alert .ant-alert-close-icon {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 14px;
+  transform: translateY(-50%);
+  margin: 0;
+}
+/* Toast fixo (sem conexão) pulsa devagar: fica na tela até a rede voltar, e parado
+   demais vira parte do cenário. */
+.toast-alert.toast-alert-sticky {
+  animation:
+    toast-in 0.22s var(--ant-ease),
+    toast-pulse 2.6s ease-in-out 0.22s infinite;
+}
+@keyframes toast-pulse {
+  0%,
+  100% {
+    box-shadow: 0 6px 20px rgba(15, 25, 40, 0.28);
+  }
+  50% {
+    box-shadow:
+      0 6px 20px rgba(15, 25, 40, 0.28),
+      0 0 0 4px rgba(255, 77, 79, 0.22);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast-alert.toast-alert,
+  .toast-alert.toast-alert-sticky {
+    animation: none;
+  }
+}
+
+/* legado: pilha antiga topo-centro (mantida caso algum host isolado ainda a use) */
+.toast-host-legacy {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 220px;
+  max-width: 440px;
+  padding: 9px 16px;
+  background: var(--surface);
+  border-radius: var(--ant-radius);
+  box-shadow: var(--ant-shadow);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ant-text);
+  pointer-events: auto;
+  animation: toast-in 0.24s var(--ant-ease);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.toast-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  flex: none;
+}
+.toast-success .toast-ico {
+  background: var(--ant-success);
+}
+.toast-error .toast-ico {
+  background: var(--ant-danger);
+}
+.toast-info .toast-ico {
+  background: var(--ant-primary);
+}
+.toast-warning .toast-ico {
+  background: var(--ant-warning);
+}
+
+/* ===== Confirm dialog (elegante + animado + responsivo) ===== */
+.cfm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8500;
+  background: var(--ant-mask);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(3px) saturate(1.1);
+  -webkit-backdrop-filter: blur(3px) saturate(1.1);
+  animation: ant-mask-in 0.24s ease-out;
+}
+.cfm-modal {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--ant-border);
+  border-radius: 16px;
+  box-shadow:
+    0 18px 50px -12px rgba(0, 0, 0, 0.32),
+    0 6px 18px -8px rgba(0, 0, 0, 0.2);
+  padding: 24px 24px 18px;
+  transform-origin: 50% 42%;
+  animation: cfm-pop 0.32s var(--ant-ease) both;
+}
+/* faixa de acento no topo — cor do tipo de diálogo */
+.cfm-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, var(--ant-primary), var(--ant-primary-hover));
+}
+.cfm-modal.danger::before {
+  background: linear-gradient(90deg, var(--ant-warning), var(--ant-danger));
+}
+.cfm-body {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+.cfm-ico {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ant-primary);
+  background: var(--ant-primary-bg);
+  animation: cfm-ico-in 0.4s var(--ant-ease) 0.06s both;
+}
+.cfm-ico.danger {
+  color: var(--ant-warning);
+  background: var(--ac-warn-bg);
+}
+/* anel pulsante sutil ao redor do ícone */
+.cfm-ico::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: cfm-ring 1.6s ease-out 0.35s;
+}
+.cfm-title {
+  margin: 2px 0 0;
+  font-size: 16.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ant-text);
+  line-height: 1.35;
+}
+.cfm-desc {
+  margin: 7px 0 0;
+  font-size: 13px;
+  color: var(--ant-text-2);
+  line-height: 1.55;
+}
+.cfm-list {
+  margin: 12px 0 2px;
+  padding: 10px 14px 10px 12px;
+  list-style: none;
+  font-size: 13px;
+  color: var(--ant-text);
+  line-height: 1.5;
+  border-radius: 12px;
+  background: var(--ac-warn-bg);
+  border: 1px solid color-mix(in srgb, var(--ant-warning) 45%, transparent);
+}
+.cfm-list li {
+  position: relative;
+  margin: 0;
+  padding: 5px 0 5px 22px;
+  animation: cfm-li-in 0.34s var(--ant-ease) both;
+}
+.cfm-list li + li {
+  border-top: 1px solid color-mix(in srgb, var(--ant-warning) 20%, transparent);
+}
+/* marcador próprio (bolinha) alinhado ao topo da linha */
+.cfm-list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ant-warning);
+}
+.cfm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+.cfm-cancel,
+.cfm-ok {
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.14s var(--ant-ease),
+    background 0.18s,
+    border-color 0.18s,
+    box-shadow 0.18s,
+    color 0.18s;
+}
+.cfm-cancel:active,
+.cfm-ok:active {
+  transform: translateY(0) scale(0.97);
+}
+.cfm-cancel {
+  background: var(--surface);
+  border: 1px solid var(--ant-border);
+  color: var(--ant-text-2);
+}
+.cfm-cancel:hover {
+  border-color: var(--ant-primary);
+  color: var(--ant-primary);
+  transform: translateY(-1px);
+}
+.cfm-ok {
+  background: var(--ant-primary);
+  border: 1px solid var(--ant-primary);
+  color: #fff;
+  box-shadow: 0 4px 12px -2px rgba(5, 145, 255, 0.4);
+}
+.cfm-ok:hover {
+  background: var(--ant-primary-hover);
+  border-color: var(--ant-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -2px rgba(5, 145, 255, 0.48);
+}
+.cfm-ok.danger {
+  background: var(--ant-danger);
+  border-color: var(--ant-danger);
+  box-shadow: 0 4px 12px -2px rgba(255, 77, 79, 0.42);
+}
+.cfm-ok.danger:hover {
+  background: var(--ant-danger-hover);
+  border-color: var(--ant-danger-hover);
+  box-shadow: 0 6px 16px -2px rgba(255, 77, 79, 0.5);
+}
+@keyframes cfm-pop {
+  0% { opacity: 0; transform: translateY(12px) scale(0.94); }
+  60% { transform: translateY(-2px) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cfm-ico-in {
+  0% { opacity: 0; transform: scale(0.4) rotate(-12deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes cfm-ring {
+  0% { opacity: 0.5; transform: scale(0.85); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+@keyframes cfm-li-in {
+  0% { opacity: 0; transform: translateX(-8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+/* telas estreitas: botões empilhados full-width (OK em cima = polegar) */
+@media (max-width: 460px) {
+  .cfm-modal { padding: 22px 18px 16px; border-radius: 14px; }
+  .cfm-footer { flex-direction: column-reverse; gap: 8px; }
+  .cfm-cancel,
+  .cfm-ok { width: 100%; padding: 11px 18px; }
+}
+/* respeita quem desliga animação no SO */
+@media (prefers-reduced-motion: reduce) {
+  .cfm-overlay,
+  .cfm-modal,
+  .cfm-ico,
+  .cfm-ico::after,
+  .cfm-list li { animation: none; }
+  .cfm-cancel:hover,
+  .cfm-ok:hover { transform: none; }
+}
+
+/* ===== engrenagem discreta do par de decks (viz linhas/waveform) =====
+   Rail próprio à direita (padding-right no deckpair) p/ a engrenagem NÃO
+   sobrepor os timers dos decks. Ancorada no canto INFERIOR-DIREITO. */
+.deckpair {
+  position: relative;
+  padding-right: 26px;
+}
+.vizmenu {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  top: auto;
+  transform: none;
+  z-index: 5;
+}
+.vizmenu-gear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  opacity: 0.65; /* discreto mas descobrível — não some de vez */
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+}
+.deckpair:hover .vizmenu-gear,
+.vizmenu-gear.active {
+  opacity: 1;
+}
+.vizmenu-gear:hover,
+.vizmenu-gear.active {
+  color: #eaf2ff;
+  background: rgba(255, 255, 255, 0.18);
+}
+/* dropdown reusa .opctx mas ancora ABSOLUTO ao gear. Gear no canto inferior →
+   abre PARA CIMA (bottom em vez de top) p/ não vazar embaixo do painel. */
+.opctx.vizmenu-pop {
+  position: absolute;
+  bottom: 28px;
+  top: auto;
+  right: 0;
+  min-width: 168px;
+}
+.vizmenu-check {
+  margin-left: auto;
+  color: var(--ac-green-tx);
+  font-weight: 800;
+}
+
+/* ===== waveform cosmético do deck (viz "wave") ===== */
+.deck-wave {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 26px;
+  padding: 0 1px;
+}
+.deck-wave.seekable {
+  cursor: pointer;
+}
+.dw-bar {
+  flex: 1 1 0;
+  min-width: 1px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background 0.12s;
+}
+.deck-a .dw-bar.on {
+  background: linear-gradient(180deg, #a8f0c8, #55c98c);
+}
+.deck-b .dw-bar.on {
+  background: linear-gradient(180deg, #7fc4ef, #3f8fc4);
+}
+.dw-head {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--surface);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  transform: translateX(-1px);
+  pointer-events: none;
+}
+
+/* ===== estado-vazio da fila (animado, elegante, divertido) ===== */
+.empty-queue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 40px 16px 48px;
+  list-style: none;
+  text-align: center;
+  animation: eq-fade-in 0.4s ease-out both;
+}
+@keyframes eq-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.eq-notes {
+  position: relative;
+  width: 180px;
+  height: 64px;
+}
+.eq-note {
+  position: absolute;
+  bottom: 0;
+  font-size: 26px;
+  color: var(--green);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: eq-float 3.4s ease-in-out infinite;
+}
+.eq-note-1 { left: 8%;  font-size: 20px; animation-delay: 0s;    color: var(--green-row); }
+.eq-note-2 { left: 28%; font-size: 30px; animation-delay: 0.5s;  color: var(--green); }
+.eq-note-3 { left: 48%; font-size: 22px; animation-delay: 1.1s;  color: var(--green-row-2); }
+.eq-note-4 { left: 66%; font-size: 32px; animation-delay: 1.6s;  color: var(--green); }
+.eq-note-5 { left: 86%; font-size: 20px; animation-delay: 2.2s;  color: var(--green-row); }
+@keyframes eq-float {
+  0%   { opacity: 0; transform: translateY(14px) rotate(-8deg) scale(0.8); }
+  25%  { opacity: 0.95; }
+  70%  { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-42px) rotate(10deg) scale(1.1); }
+}
+.eq-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.eq-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.eq-sub {
+  font-size: 12.5px;
+  color: var(--ant-text-3);
+}
+
+/* ===== entrada suave da linha nova no histórico (sem "tranco") ===== */
+.row.played {
+  animation: hist-in 0.32s ease-out both;
+}
+@keyframes hist-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Pastas da biblioteca (FolderBrowser) ─────────────────────────────────── */
+.fb {
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid var(--bd);
+}
+.fb-new {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.fb-input {
+  flex: 1;
+  min-width: 0; /* sem isso o input estoura o flex em painel estreito */
+  padding: 5px 9px;
+  border: 1px solid var(--bd);
+  border-radius: var(--ant-radius);
+  background: var(--surface);
+  color: var(--txt);
+  font-size: 12px;
+}
+.fb-add {
+  padding: 5px 12px;
+  border: 1px solid var(--bd);
+  border-radius: var(--ant-radius);
+  background: var(--surface-2);
+  color: var(--txt);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.fb-add:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+/* auto-fill mantém as pastas legíveis do painel estreito ao monitor largo, sem
+   media query: a coluna cresce até caber mais uma pasta e quebra sozinha. */
+.fb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 6px;
+}
+.fb-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 9px;
+  border: 1px solid var(--bd);
+  border-radius: var(--ant-radius);
+  background: var(--surface);
+  color: var(--txt);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.fb-item:hover {
+  border-color: var(--bd-2);
+  background: var(--surface-2);
+}
+.fb-item.on {
+  border-color: var(--ac-blue-tx);
+  background: var(--ac-blue-bg);
+  font-weight: 700;
+}
+.fb-ico {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+.fb-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fb-count {
+  flex: none;
+  font-size: 11px;
+  color: var(--txt-3);
+  font-variant-numeric: tabular-nums;
+}
+/* o X só aparece no hover/foco: em uso normal ele seria ruído em cada pasta */
+.fb-del {
+  flex: none;
+  opacity: 0;
+  padding: 0 2px;
+  color: var(--ac-danger-tx);
+  font-weight: 800;
+  cursor: pointer;
+}
+.fb-item:hover .fb-del,
+.fb-del:focus-visible {
+  opacity: 1;
+}
+.fb-empty {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  color: var(--txt-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fb-item {
+    transition: none;
+  }
+}
+
+/* ── Envio em lote (UploadModal) ──────────────────────────────────────────── */
+.up-modal {
+  max-width: 620px;
+  width: 92vw;
+}
+.up-count {
+  margin-left: 8px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+.up-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.up-drop-ico {
+  font-size: 22px;
+  opacity: 0.6;
+}
+.lib-drop-hint em {
+  font-style: normal;
+  color: var(--txt-3);
+}
+/* O LOTE (medidor + lista). `container-type` porque o modal é uma coluna estreita:
+   quem manda no que cabe é a largura DELE, não a da tela. */
+.up-batch {
+  container-type: inline-size;
+  margin: 10px 0;
+}
+.up-summary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 2px 6px;
+  background: var(--surface);
+}
+.up-gauge {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.up-gauge-fill {
+  position: relative;
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--ac-blue-tx), var(--ac-green-tx));
+  transition: width 0.22s ease-out;
+  overflow: hidden;
+}
+/* brilho correndo = "está subindo AGORA". Parado, o medidor fica chapado — a
+   diferença entre enviando e travado tem que ser visível de longe. */
+.up-gauge-fill.run::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: up-sheen 1.1s linear infinite;
+}
+@keyframes up-sheen {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+.up-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+}
+.up-pct {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--txt);
+  font-variant-numeric: tabular-nums;
+  min-width: 40px;
+}
+.up-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--txt-2);
+  font-size: 11px;
+  font-weight: 600;
+}
+.up-pill-run {
+  background: var(--ac-blue-bg);
+  color: var(--ac-blue-tx);
+}
+.up-pill-ok {
+  background: var(--ac-green-bg);
+  color: var(--ac-green-tx);
+}
+.up-pill-error {
+  background: var(--ac-danger-bg);
+  color: var(--ac-danger-tx);
+}
+.up-clear {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--txt-3);
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.up-clear:hover {
+  color: var(--txt);
+}
+/* a lista rola sozinha: 80 arquivos não podem empurrar os botões pra fora da tela */
+.up-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: clamp(180px, 34vh, 320px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.up-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border: 1px solid var(--bd);
+  border-radius: var(--ant-radius);
+  background: var(--surface);
+  font-size: 12px;
+  overflow: hidden;
+  animation: up-in 0.16s ease-out both;
+}
+@keyframes up-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+/* concluída recua visualmente: o que importa depois do envio é o que FALTA */
+.up-ok {
+  opacity: 0.62;
+  border-color: var(--bd);
+}
+.up-error {
+  border-color: var(--ac-danger-tx);
+  background: var(--ac-danger-bg);
+}
+.up-uploading {
+  border-color: var(--ac-blue-tx);
+}
+/* preenchimento do fundo da linha (substitui o traço de 2px do rodapé): mostra o
+   progresso no mesmo lugar do nome e SOME ao terminar, sem deixar rastro. */
+.up-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: linear-gradient(90deg, var(--ac-blue-bg), transparent);
+  transition: width 0.18s linear;
+  pointer-events: none;
+}
+/* Disco de status. Enviando = ANEL cônico com o percentual do arquivo; a "casquinha"
+   interna guarda o glifo, então o mesmo elemento serve pros 4 estados. */
+.up-disc {
+  position: relative;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  display: grid;
+  place-items: center;
+}
+.up-uploading .up-disc {
+  background: conic-gradient(var(--ac-blue-tx) calc(var(--p, 0) * 1turn), var(--bd-2) 0);
+}
+.up-ok .up-disc {
+  background: var(--ac-green-bg);
+  animation: up-pop 0.26s ease-out;
+}
+.up-error .up-disc {
+  background: var(--ac-danger-bg);
+}
+@keyframes up-pop {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.16);
+  }
+}
+.up-disc-g {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--txt-3);
+}
+.up-ok .up-disc-g {
+  background: transparent;
+  color: var(--ac-green-tx);
+  font-size: 11px;
+}
+.up-error .up-disc-g {
+  background: transparent;
+  color: var(--ac-danger-tx);
+  font-size: 11px;
+}
+.up-name {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.up-info {
+  position: relative;
+  flex: none;
+  font-size: 11px;
+  color: var(--txt-3);
+  font-variant-numeric: tabular-nums;
+  max-width: 42%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* painel estreito: o tamanho/percentual é o primeiro a sair — nome do arquivo
+   é o que identifica a linha. Container query: manda a largura do MODAL. */
+@container (max-width: 380px) {
+  .up-info {
+    display: none;
+  }
+  .up-uploading .up-info {
+    display: block;
+    max-width: none;
+  }
+}
+.up-error .up-info {
+  color: var(--ac-danger-tx);
+}
+.up-rm {
+  position: relative;
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--txt-3);
+  cursor: pointer;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.up-item:hover .up-rm,
+.up-rm:focus-visible {
+  opacity: 1;
+}
+.up-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+.up-folders {
+  margin-top: 10px;
+}
+.up-folders-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--txt-2);
+  margin-bottom: 5px;
+}
+.up-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.up-chip {
+  padding: 4px 10px;
+  border: 1px solid var(--bd);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--txt-2);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.up-chip.on {
+  border-color: var(--ac-blue-tx);
+  background: var(--ac-blue-bg);
+  color: var(--ac-blue-tx);
+  font-weight: 700;
+}
+.up-chip-new {
+  padding: 4px 10px;
+  border: 1px dashed var(--bd-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--txt);
+  font-size: 11.5px;
+  min-width: 150px;
+}
+.up-nota {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--txt-3);
+}
+.up-footer {
+  gap: 8px;
+}
+.up-status {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--txt-2);
+  font-weight: 600;
+}
+@media (prefers-reduced-motion: reduce) {
+  .up-fill,
+  .up-gauge-fill,
+  .up-rm {
+    transition: none;
+  }
+  .up-item,
+  .up-ok .up-disc {
+    animation: none;
+  }
+  .up-gauge-fill.run::after {
+    display: none;
+  }
+}
+
+/* ============ lista de mídias: instrumental e BPM ============ */
+/* Selo da faixa já preparada — REDESENHADO (0.2.39), só na grade de mídias.
+
+   O desenho anterior era uma pílula com borda, emoji e texto, e tinha dois
+   problemas na tabela densa: o emoji renderiza com altura própria (empurrando a
+   linha de base) e o conjunto QUEBRAVA para baixo do título, deixando linhas com
+   alturas diferentes e a tabela visualmente desalinhada.
+
+   Agora é uma etiqueta discreta, sem borda e sem emoji, que fica NA MESMA LINHA do
+   título — o título é que trunca. Cantos levemente arredondados em vez de pílula
+   completa: numa tabela, a pílula compete com o texto; a etiqueta acompanha. */
+.opmedia-tbl .c-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0; /* sem isto o flex não deixa o título encolher, e o selo é expulso */
+}
+.opmedia-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.opmedia-stem {
+  flex: none; /* o selo nunca encolhe nem quebra: quem cede é o título */
+  padding: 2px 6px;
+  /* Pílula com contorno, IGUAL na grade e na fila. Eram dois desenhos para o
+     mesmo fato ("esta faixa tem versão sem voz"), e desenho diferente sugere
+     estado diferente. */
+  border-radius: 999px;
+  border: 1px solid var(--ac-green-tx);
+  background: var(--ac-green-bg);
+  color: var(--ac-green-tx);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+  cursor: help;
+  vertical-align: middle;
+}
+
+/* Coluna de BPM. Tabular para os números alinharem na vertical: com fonte
+   proporcional, "97" e "128" desencontram e a coluna fica torta. */
+.opmedia-tbl th.c-bpm,
+.opmedia-tbl td.c-bpm {
+  width: 48px;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--ant-text-3);
+}
+/* Barra de preparo — INDETERMINADA e ABAIXO do nome da faixa.
+
+   Abaixo, e não ao lado: ela fala da faixa inteira, e encostada no fim do título
+   competia com o nome e mudava de posição conforme o tamanho dele — em título
+   longo, sumia da vista.
+
+   Indeterminada porque o modelo não reporta progresso que dê pra confiar (6
+   threads em segmentos diferentes, cada uma com sua porcentagem). Uma barra que
+   finge saber a porcentagem mente justamente quando trava. */
+.opmedia-prep {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: 6px;
+  margin: 5px 0 2px;
+  border-radius: 3px;
+  background: var(--ant-border);
+  overflow: hidden;
+}
+.opmedia-prep i {
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: 3px;
+  /* gradiente com as pontas transparentes: bloco chapado correndo lê como um
+     objeto deslizando; com as bordas suaves lê como PULSO percorrendo a barra. */
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--ant-primary) 35%,
+    var(--ant-primary) 65%,
+    transparent 100%
+  );
+  animation: opmedia-prep-run 1.25s ease-in-out infinite;
+}
+/* Na fila ≠ rodando: parada e apagada é "sua vez ainda não chegou". Sem essa
+   distinção, três faixas enfileiradas pareceriam três separações simultâneas —
+   e o worker é UM só. */
+.opmedia-prep.queued i {
+  animation: none;
+  width: 100%;
+  opacity: 0.35;
+}
+@keyframes opmedia-prep-run {
+  0% {
+    transform: translateX(-110%);
+  }
+  100% {
+    transform: translateX(285%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .opmedia-prep i {
+    animation: none;
+    width: 100%;
+    opacity: 0.6;
+  }
+}
+
+/* ============ SEM-VOZ ligado: equalizador + respiração ============ */
+/* Um interruptor que só muda de cor obriga a comparar com o vizinho pra saber se
+   está ligado. Movimento resolve isso de longe — e barras dançando dizem o que a
+   cor não diz: está saindo som assim AGORA. */
+.tbtn-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  height: 18px; /* mesma caixa do emoji que ele substitui: nada salta ao ligar */
+  line-height: 1;
+}
+.tbtn-eq i {
+  display: block;
+  width: 3px;
+  height: 40%;
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: bottom center;
+  animation: tbtn-eq-bounce 0.9s ease-in-out infinite;
+}
+/* Atrasos QUEBRADOS (não múltiplos exatos): com espaçamento regular as quatro
+   barras formam uma onda que se repete e o olho lê como "gif em loop". Fora de
+   fase elas parecem reagir à música. */
+.tbtn-eq i:nth-child(1) {
+  animation-delay: -0.12s;
+}
+.tbtn-eq i:nth-child(2) {
+  animation-delay: -0.47s;
+  animation-duration: 0.72s;
+}
+.tbtn-eq i:nth-child(3) {
+  animation-delay: -0.28s;
+  animation-duration: 1.05s;
+}
+.tbtn-eq i:nth-child(4) {
+  animation-delay: -0.63s;
+  animation-duration: 0.83s;
+}
+@keyframes tbtn-eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+/* Respiração do botão SEM-VOZ: um halo verde que abre e fecha devagar. Lento de
+   propósito (2,4s) — rápido viraria alarme, e isto não é erro, é estado.
+
+   ⚠️ SÓ NELE (`.tbtn-voice`), e não em todo `.tbtn.active`. O PAUSAR também usa
+   `.active` — para dizer "pausado", virando RETOMAR — e a regra genérica o punha
+   para piscar junto: ligar o SEM-VOZ acendia dois botões animados, sugerindo que
+   o RETOMAR estava fazendo algo. Animação é para o estado que está ATUANDO
+   agora; pausado é o contrário disso. */
+.tbtn-voice.active {
+  animation: tbtn-breathe 2.4s ease-in-out infinite;
+}
+@keyframes tbtn-breathe {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.12),
+      0 0 0 0 var(--ac-green-bg);
+  }
+  50% {
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.12),
+      0 0 0 4px var(--ac-green-bg);
+  }
+}
+/* Opt-out obrigatório: sem movimento, o estado continua legível pela cor e pelo
+   afundado — o que se perde é o realce, não a informação. */
+@media (prefers-reduced-motion: reduce) {
+  .tbtn-eq i,
+  .tbtn-voice.active {
+    animation: none;
+  }
+  .tbtn-eq i {
+    height: 70%;
+  }
+}
+
+/* Barra de preparo NO BOTÃO do transporte — mesma gramática da grade, encaixada
+   no rodapé do botão. Absoluta para não empurrar o ícone e o rótulo: o botão não
+   pode mudar de altura ao entrar em preparo (a barra inteira saltaria). */
+.tbtn {
+  position: relative;
+}
+.tbtn-prep {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ant-border);
+  overflow: hidden;
+}
+.tbtn-prep i {
+  display: block;
+  width: 38%;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--ant-primary) 35%,
+    var(--ant-primary) 65%,
+    transparent 100%
+  );
+  animation: opmedia-prep-run 1.25s ease-in-out infinite;
+}
+/* Na fila: parada e apagada. O worker é UM só — três faixas pedidas não são três
+   separações ao mesmo tempo, e a barra não pode sugerir isso. */
+.tbtn-prep.queued i {
+  animation: none;
+  width: 100%;
+  opacity: 0.35;
+}
+/* Preparando é um estado de ESPERA, não um botão morto: mantém a opacidade de
+   ativo (o `:disabled` genérico apagaria) e o cursor diz que não adianta clicar. */
+.tbtn.tbtn-busy:disabled {
+  opacity: 0.9;
+  cursor: progress;
+  border-style: solid;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tbtn-prep i {
+    animation: none;
+    width: 100%;
+    opacity: 0.6;
+  }
+}
+
+/* ============ confirmação de aperto (3s) ============ */
+/* `:active` do CSS só dura enquanto o dedo está no botão — solta e some. Num
+   playout o efeito da ação (a fila andou, o áudio trocou) nem sempre é visível na
+   hora, e sem retorno o operador clica de novo achando que não pegou. Daí um
+   estado que SOBREVIVE ao clique, controlado por JS (ver usePressFlash). */
+.tbtn-pressed {
+  background: var(--ant-primary-bg);
+  border-color: var(--ant-primary);
+  color: var(--ant-primary);
+  font-weight: 800;
+}
+/* ⚠️ O EFEITO TEM DE SOBREVIVER AO `:disabled`, e foi o que quase o matou:
+   PRÓXIMA e RETROCEDER ficam `busy` (desabilitados) por um instante logo após o
+   clique — exatamente durante o efeito — e a regra genérica `.tbtn:disabled`
+   derrubava a opacidade para 0,45. A confirmação acontecia apagada, bem no
+   momento em que ela mais importa. */
+.tbtn-pressed:disabled {
+  opacity: 1;
+}
+/* Anel que abre e some, repetindo devagar durante os 3s. Anel (e não fundo cheio)
+   porque o fundo é o que marca LIGADO no LOOP/SEM-VOZ — usar a mesma linguagem
+   para "acabei de apertar" faria os dois estados se confundirem. */
+.tbtn-pressed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none; /* inviolável: não pode roubar o próximo clique */
+  animation: tbtn-press-ring 1s ease-out 3;
+}
+@keyframes tbtn-press-ring {
+  0% {
+    box-shadow: 0 0 0 0 var(--ant-primary);
+    opacity: 0.7;
+  }
+  100% {
+    box-shadow: 0 0 0 14px var(--ant-primary);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tbtn-pressed::after {
+    animation: none;
+  }
+  /* sem movimento a confirmação vira contorno estático — some junto com a classe */
+  .tbtn-pressed {
+    box-shadow: inset 0 0 0 2px var(--ant-primary);
+  }
+}
+
+/* BPM na fila. Tabular para os números alinharem na vertical — com fonte
+   proporcional "97" e "128" desencontram e a coluna fica torta. Vazio quando não
+   medido: melhor coluna em branco que um traço repetido em toda linha. */
+.rows .row.q .opmedia-stem {
+  /* a fila mantém o formato de pílula: o pedido de redesenho foi só para a grade
+     de mídias, e ali o selo divide espaço com colunas de origem e transição. */
+  border-radius: 999px;
+  border: 1px solid var(--ac-green-tx);
+  margin-left: 6px;
+}
+.rows .row.q .r-bpm {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--ant-text-3);
+  white-space: nowrap;
+}

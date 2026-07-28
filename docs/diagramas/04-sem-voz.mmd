@@ -1,0 +1,17 @@
+flowchart TB
+  T["faixa <b>local</b> na fila<br/>um trabalhador só"]
+  T --> PORT{{"porta <b>StemSeparator</b><br/>um método"}}
+  PORT --> L["<b>LOCAL</b> · demucs.cpp<br/>~6 min · grátis"]
+  PORT --> C["<b>NUVEM</b> · GPU RunPod<br/>~10 s · ~US$ 0,001"]
+  L --> WAV[("soma drums+bass+other<br/><b>.instrumental.wav</b>")]
+  C --> WAV
+  WAV --> SW["botão <b>SEM-VOZ</b> habilita<br/>troca com varredura de filtro"]
+
+  classDef port fill:#1b5e20,stroke:#0b3d10,color:#fff
+  classDef loc fill:#e8f0fe,stroke:#3c78d8,color:#12325e
+  classDef nuv fill:#fdeaea,stroke:#c5221f,color:#5c0f0d
+  classDef out fill:#fff4e5,stroke:#e08b00,color:#5a3600
+  class PORT port
+  class L loc
+  class C nuv
+  class WAV,SW,T out

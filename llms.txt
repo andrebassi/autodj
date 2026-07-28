@@ -1,0 +1,132 @@
+# AutoDJ
+
+> Tocador de música que mixa como DJ e anda sozinho, no navegador. Toca arquivos
+> locais, Spotify e YouTube na mesma fila, com crossfade real, BPM medido e versão
+> SEM-VOZ separada por IA. Servidor em Go (arquitetura hexagonal) que só orquestra
+> a agenda — **o áudio toca no navegador**, não no servidor. Licença MIT.
+
+Este arquivo é o mapa do projeto para agentes e LLMs. Vai direto ao ponto: como
+rodar, onde ficam as coisas, e o que quebra se você não souber de antemão.
+
+- Código: https://github.com/andrebassi/autodj
+- Site do projeto: https://autodj-site.andrebassi.com.br
+- Instância pública: https://autodj.andrebassi.com.br
+- Idioma: documentação e interface em **pt-BR**; identificadores de código em **inglês**
+
+## Rodar local em 3 comandos
+
+```bash
+git clone https://github.com/andrebassi/autodj.git && cd autodj
+nix develop     # go 1.26, node 22, pnpm, ffmpeg, aubio — tudo de uma vez
+task serve      # servidor + interface em http://localhost:8099
+```
+
+Sem Nix, o servidor sobe sozinho com repositório em memória:
+
+```bash
+GOWORK=off PORT=8095 go run ./cmd/server
+```
+
+Depois, para encher a biblioteca: `task lib:scan FOLDER=/caminho/para/mp3s`.
+
+### O que precisa existir na máquina
+
+| Ferramenta | Para quê | Sem ela |
+|---|---|---|
+| `ffmpeg` / `ffprobe` | metadados, capa embutida, análise (trim, LUFS, vocal) | upload falha e faixa não ganha marcadores |
+| `aubio-tools` | BPM | acervo inteiro fica sem BPM, **em silêncio** |
+| `nix` (opcional) | traz tudo acima de uma vez | instale ffmpeg e aubio à mão |
+
+## ⚠️ Armadilhas que custam tempo (leia antes de depurar)
+
+- **Abra `http://localhost:<porta>`, NUNCA `http://127.0.0.1:<porta>`.** O YouTube
+  se recusa a incorporar clipe monetizado quando a origem é um IP literal — o vídeo
+  entra no deck e some. O redirect de OAuth também difere entre os dois hostnames.
+- **`GOWORK=off` é obrigatório.** O módulo é `autodj` (local, não
+  `github.com/...`) e builda standalone; o Taskfile já exporta isso.
+- **Feature nova não aparece?** Provavelmente o binário Go é antigo servindo bundle
+  novo. `task serve` reconstrói os dois.
+- **Sem `AUTODJ_*` de integração, as rotas correspondentes não existem (404) e a UI
+  esconde a função.** Isso é degradação graciosa deliberada, não bug.
+- **Cobertura e changelog são portões de build**: `task cover` exige domínio 100% e
+  adapters/app ≥90%; `task web:build` aborta se a git tag mais recente não tiver
+  entrada em `web/app/lib/changelog.ts`.
+
+## Onde fica o modelo de separação (Demucs v4 / htdemucs)
+
+- **Local**: binário `~/.autodj/bin/demucs` (`AUTODJ_DEMUCS_BIN`), pesos
+  `~/.autodj/models/htdemucs.bin` (`AUTODJ_DEMUCS_MODEL`, ~80 MB, do Hugging Face
+  `Retrobear/demucs.cpp`). Instalados por `scripts/build-demucs.sh`, que clona o
+  `demucs.cpp` (MIT) em `~/.autodj/src`.
+- **Nuvem**: `pip install demucs` dentro do pod (imagem
+  `pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime`); o modelo é baixado pela própria
+  biblioteca no primeiro uso e **morre com o pod** — nunca toca o disco do operador.
+- ⚠️ É **inferência**, não treinamento: o modelo já vem treinado.
+
+## Onde ficam as coisas
+
+```
+domain/          modelo puro, ZERO dependências externas — os invariantes moram aqui
+ports/           interfaces (inbound = casos de uso, outbound = mundo externo)
+app/             serviços que orquestram
+adapters/driven/ implementações: sqlite, postgres, ffprobe, audioanalyze,
+                 spotify, youtube, stemsep (local + nuvem), filestore
+adapters/driving/httpapi (REST) e ws (WebSocket)
+cmd/server       wiring; cmd/serverkit resolve a estação por fingerprint
+web/app          Next.js — components/, hooks/, lib/
+docs/            prd.md, architecture.md, stories/, known-issues.md, pendencias.md
+```
+
+Direção de dependência: `adapters → ports → domain`. O domínio não importa banco,
+HTTP nem SDK de terceiro.
+
+## Invariantes que NÃO se relaxam
+
+- **`spotify | youtube ⇒ mixable = false`.** Áudio com DRM e embed não têm PCM
+  deste lado, então nunca entram no barramento de mixagem — sem crossfade real,
+  beatmatch ou waveform. Imposto em duas camadas: domínio (`Track.Validate`) e
+  banco (CHECK). Enfileirar e tocar essas fontes é normal; **mixar** é que não.
+- **Nunca reparentar o iframe do YouTube.** Mover um `<iframe>` na árvore DOM o
+  recarrega e mata o handshake do player. Reposicione por CSS/overlay.
+- **Ganho no `<audio>.volume`, não em Web Audio.** O `AudioContext` nasce suspenso
+  e exige gesto; rotear o playout por ele arrisca deixar a estação muda.
+
+## Documentação (URLs cruas, prontas para buscar)
+
+- [README](https://raw.githubusercontent.com/andrebassi/autodj/main/README.md): visão geral, como usar, os cinco diagramas
+- [CLAUDE.md](https://raw.githubusercontent.com/andrebassi/autodj/main/CLAUDE.md): manual denso de implementação, decisões e por quês
+- [CONTRIBUTING](https://raw.githubusercontent.com/andrebassi/autodj/main/CONTRIBUTING.md): regras que o CI cobra
+- [SECURITY](https://raw.githubusercontent.com/andrebassi/autodj/main/SECURITY.md): modelo de ameaça, achados e o que NÃO é vulnerabilidade
+- [known-issues](https://raw.githubusercontent.com/andrebassi/autodj/main/docs/known-issues.md): catálogo indexado **por sintoma** — comece aqui quando algo não funciona
+- [pendencias](https://raw.githubusercontent.com/andrebassi/autodj/main/docs/pendencias.md): o que não está pronto e por quê
+- [architecture](https://raw.githubusercontent.com/andrebassi/autodj/main/docs/architecture.md): decisões e change log
+- [prd](https://raw.githubusercontent.com/andrebassi/autodj/main/docs/prd.md): épicos e requisitos
+
+## Como foi construído
+
+Escrito com **Claude Code** (agente de linha de comando da Anthropic) entre 24 e 28 de
+julho de 2026 — 5 dias, 153 commits, 34 versões. 46 mil linhas de Go, **24 mil delas de
+teste**, 10 mil linhas de documentação, domínio com 100% de cobertura.
+
+O que mantém isso honesto está no próprio repositório: `CLAUDE.md` (2.085 linhas de
+decisões e invariantes), portões de build que reprovam cobertura e changelog, e
+`docs/known-issues.md` com 37 defeitos indexados **por sintoma**. Detalhes na seção
+"Feito na era do vibe coding" do README.
+
+## Comandos úteis
+
+```bash
+task serve            # servidor + interface juntos (:8099)
+task dev              # só a API Go (:8095)
+task web:dev          # só o Next.js (:3000) — fala com a API em :8095
+task test             # go test ./... -cover
+task cover            # portão: domínio 100%, adapters/app >=90%
+task smoke:media      # prova o isolamento de mídia entre estações
+task lib:scan FOLDER=…  # varre uma pasta e importa
+task stems:cloud      # prepara SEM-VOZ de todo o acervo numa GPU alugada
+```
+
+## Optional
+
+- [Variáveis de ambiente](https://raw.githubusercontent.com/andrebassi/autodj/main/README.md): seção "Variáveis de ambiente" do README — nenhuma é obrigatória para rodar com músicas locais
+- [Separação de vocal](https://raw.githubusercontent.com/andrebassi/autodj/main/docs/stories/10.6.separacao-na-nuvem.md): como a GPU alugada entra como segundo adapter da mesma porta

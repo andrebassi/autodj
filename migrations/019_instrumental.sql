@@ -1,0 +1,20 @@
+-- 020_instrumental: caminho do arquivo SEM VOCAL gerado por separação de IA.
+--
+-- Guarda o resultado do Demucs (v4 hybrid transformer, via `demucs.cpp`) rodado
+-- sobre o PCM da faixa. Vazio = ainda não preparado.
+--
+-- É um ARQUIVO NOVO, ao lado do original: a faixa nunca é reescrita, e apagar o
+-- arquivo devolve o comportamento anterior. Distinto do modo VOZ, que é
+-- cancelamento de centro em tempo real e não gera nada.
+--
+-- POR QUE ISTO PRECISA SER PERSISTIDO: a separação leva ~1,4× o tempo real
+-- (medido: 45s de áudio em 64,8s num M1 Pro com 6 threads, ou seja ~6 min para
+-- uma música de 4). Perder este caminho num Upsert significaria reprocessar do
+-- zero — minutos de CPU jogados fora por gravação.
+--
+-- É também o único caminho que resolve faixa MONO: o modelo separa por conteúdo
+-- e não depende de imagem estéreo, que é justamente o que falta ali.
+--
+-- Idempotente (IF NOT EXISTS): o SQLite tem o equivalente em
+-- `ensureInstrumentalColumn`.
+ALTER TABLE tracks ADD COLUMN IF NOT EXISTS instrumental_path TEXT NOT NULL DEFAULT '';
