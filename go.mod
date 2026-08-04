@@ -16,7 +16,7 @@ require (
 	github.com/raitonoberu/ytsearch v0.2.0
 	github.com/wailsapp/wails/v2 v2.13.0
 	golang.org/x/crypto v0.53.0
-	modernc.org/sqlite v1.54.0
+	modernc.org/sqlite v1.55.0
 )
 
 require (
